@@ -1,0 +1,15 @@
+[Unit]
+Description=Xema Manager service
+  
+[Service]
+ExecStart=/usr/bin/dotnet /home/xema/manager/Manager.dll
+WorkingDirectory=/home/xema/manager/
+User=
+Group=
+Restart=on-failure
+SyslogIdentifier=xema-manager
+PrivateTmp=true
+  
+[Install]
+WantedBy=multi-user.target
+
