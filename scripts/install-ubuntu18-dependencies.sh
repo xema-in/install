@@ -4,12 +4,6 @@ then
   apt install -y wget
 fi
 
-id -u xema
-if [ "$?" -ne "0" ]
-then
-  useradd xema -m
-fi
-
 which asterisk
 if [ "$?" -ne "0" ]
 then
