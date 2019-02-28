@@ -1,9 +1,3 @@
-which wget
-if [ "$?" -ne "0" ]
-then
-  apt install -y wget
-fi
-
 which asterisk
 if [ "$?" -ne "0" ]
 then
@@ -14,6 +8,12 @@ which java
 if [ "$?" -ne "0" ]
 then
   apt install -y openjdk-8-jre
+fi
+
+which wget
+if [ "$?" -ne "0" ]
+then
+  apt install -y wget
 fi
 
 which dotnet
