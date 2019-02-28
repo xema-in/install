@@ -16,6 +16,12 @@ then
   apt install -y asterisk
 fi
 
+which java
+if [ "$?" -ne "0" ]
+then
+  apt install -y openjdk-8-jre
+fi
+
 which dotnet
 if [ "$?" -ne "0" ]
 then
