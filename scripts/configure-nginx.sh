@@ -6,3 +6,4 @@ then
   ln -s /etc/nginx/sites-available/xema.nginx /etc/nginx/sites-enabled/xema.nginx
 fi
 
+nginx -s reload
