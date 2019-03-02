@@ -28,3 +28,8 @@ then
   apt-get install -y dotnet-sdk-2.2
 fi
 
+which nginx
+if [ "$?" -ne "0" ]
+then
+  apt install -y nginx
+fi
