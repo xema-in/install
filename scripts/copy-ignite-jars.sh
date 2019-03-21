@@ -1,2 +1,2 @@
-mkdir /home/xema/manager/libs
+mkdir -p /home/xema/manager/libs
 cp ./libs/* /home/xema/manager/libs
