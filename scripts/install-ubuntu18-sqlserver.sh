@@ -3,7 +3,7 @@
 # Use the following variables to control your install:
 
 # Password for the SA user (required)
-MSSQL_SA_PASSWORD='<YourStrong!Passw0rd>'
+MSSQL_SA_PASSWORD='G$NT%y>JtT[Xr&={2*m_t?bjs[x*u?%m'
 
 # Product ID of the version of SQL server you're installing
 # Must be evaluation, developer, express, web, standard, enterprise, or your 25 digit product key
@@ -17,8 +17,8 @@ MSSQL_PID='express'
 # SQL_INSTALL_FULLTEXT='y'
 
 # Create an additional user with sysadmin privileges (optional)
-# SQL_INSTALL_USER='<Username>'
-# SQL_INSTALL_USER_PASSWORD='<YourStrong!Passw0rd>'
+SQL_INSTALL_USER='xema'
+SQL_INSTALL_USER_PASSWORD='f>GfCN37KMjxsX7xZRGQapD'
 
 if [ -z $MSSQL_SA_PASSWORD ]
 then
