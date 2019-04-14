@@ -11,7 +11,7 @@ MSSQL_SA_PASSWORD='<YourStrong!Passw0rd>'
 MSSQL_PID='express'
 
 # Install SQL Server Agent (recommended)
-SQL_INSTALL_AGENT='y'
+# SQL_INSTALL_AGENT='y'
 
 # Install SQL Server Full Text Search (optional)
 # SQL_INSTALL_FULLTEXT='y'
@@ -27,8 +27,10 @@ then
 fi
 
 echo Adding Microsoft repositories...
-sudo curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add repoargs="$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
-sudo add-apt-repository "${repoargs}" repoargs="$(curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list)"
+sudo curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+repoargs="$(curl https://packages.microsoft.com/config/ubuntu/16.04/mssql-server-2017.list)"
+sudo add-apt-repository "${repoargs}"
+repoargs="$(curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list)"
 sudo add-apt-repository "${repoargs}"
 
 echo Running apt-get update -y...
@@ -114,3 +116,5 @@ then
 fi
 
 echo Done!
+
+# https://docs.microsoft.com/en-in/sql/linux/sample-unattended-install-ubuntu?view=sql-server-2017
