@@ -51,7 +51,7 @@ sudo ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
 echo Adding SQL Server tools to your path...
 echo PATH="$PATH:/opt/mssql-tools/bin" >> ~/.bash_profile
 echo 'export PATH="$PATH:/opt/mssql-tools/bin"' >> ~/.bashrc
-source ~/.bashrc
+#source ~/.bashrc
 
 # Optional SQL Server Agent installation:
 if [ ! -z $SQL_INSTALL_AGENT ]
@@ -68,9 +68,9 @@ then
 fi
 
 # Configure firewall to allow TCP port 1433:
-echo Configuring UFW to allow traffic on port 1433...
-sudo ufw allow 1433/tcp
-sudo ufw reload
+#echo Configuring UFW to allow traffic on port 1433...
+#sudo ufw allow 1433/tcp
+#sudo ufw reload
 
 # Optional example of post-installation configuration.
 # Trace flags 1204 and 1222 are for deadlock tracing.
