@@ -81,28 +81,7 @@ fi
 echo Restarting SQL Server...
 sudo systemctl restart mssql-server
 
-# Connect to server and get the version:
-counter=1
-errstatus=1
-while [ $counter -le 5 ] && [ $errstatus = 1 ]
-do
-  echo Waiting for SQL Server to start...
-  sleep 3s
-  /opt/mssql-tools/bin/sqlcmd \
-    -S localhost \
-    -U SA \
-    -P $MSSQL_SA_PASSWORD \
-    -Q "SELECT @@VERSION" 2>/dev/null
-  errstatus=$?
-  ((counter++))
-done
-
-# Display error if connection failed:
-if [ $errstatus = 1 ]
-then
-  echo Cannot connect to SQL Server, installation aborted
-  exit $errstatus
-fi
+sleep 10s
 
 # Optional new user creation:
 if [ ! -z $SQL_INSTALL_USER ] && [ ! -z $SQL_INSTALL_USER_PASSWORD ]
