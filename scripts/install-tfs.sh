@@ -42,9 +42,9 @@ wget -c https://vstsagentpackage.azureedge.net/agent/2.147.1/vsts-agent-linux-x6
 tar -zxvf vsts-agent-linux-x64-2.147.1.tar.gz
 if [ -x "$(command -v systemctl)" ]
 then 
-  ./config.sh --runasservice --unattended --acceptteeeula --deploymentgroup --deploymentgroupname "'$company'" --agent "'$server'" --url https://dev.azure.com/xema-in/ --work _work --projectname 'Xema' --auth PAT --token '$pat'
+  ./config.sh --runasservice --unattended --acceptteeeula --deploymentgroup --deploymentgroupname "'$company'" --agent "'$server'" --url https://dev.azure.com/xema-in/ --work _work --projectname 'Manager' --auth PAT --token '$pat'
 else 
-  ./config.sh                --unattended --acceptteeeula --deploymentgroup --deploymentgroupname "'$company'" --agent "'$server'" --url https://dev.azure.com/xema-in/ --work _work --projectname 'Xema' --auth PAT --token '$pat'
+  ./config.sh                --unattended --acceptteeeula --deploymentgroup --deploymentgroupname "'$company'" --agent "'$server'" --url https://dev.azure.com/xema-in/ --work _work --projectname 'Manager' --auth PAT --token '$pat'
   ./run.sh
 fi
 
