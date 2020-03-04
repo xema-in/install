@@ -2,8 +2,8 @@
 Description=Xema Manager service
   
 [Service]
-ExecStart=/usr/bin/dotnet /home/xema/manager/Manager.dll
-WorkingDirectory=/home/xema/manager/
+ExecStart=/usr/bin/dotnet /var/lib/xema/manager/Manager.dll
+WorkingDirectory=/var/lib/xema/manager
 User=
 Group=
 Restart=on-failure
