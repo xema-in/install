@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Detect Init System Type
 if [[ `/sbin/init --version` =~ upstart ]];
 then
@@ -19,6 +21,11 @@ then
 else
   ostype="Unknown"
 fi
+
+echo "Detected Init Type: " $inittype
+echo "Detected OS Type: " $ostype
+
+
 
 
 # Install Deps for Ubuntu using apt
@@ -131,7 +138,4 @@ mkdir -p /var/lib/xema/manager/Files
 
 wget -c https://github.com/xema-in/manager/releases/latest/download/Manager.zip -O /tmp/manager.zip
 unzip /tmp/manager.zip -d /var/lib/xema/manager
-
-echo "Detected Init Type: " $inittype
-echo "Detected OS Type: " $ostype
 
