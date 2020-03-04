@@ -127,8 +127,7 @@ fi
 nginx -s reload
 
 
-mkdir /var/lib/xema/manager
-mkdir /var/lib/xema/manager/Files
+mkdir -p /var/lib/xema/manager/Files
 
 wget -c https://github.com/xema-in/manager/releases/latest/download/Manager.zip -O /tmp/manager.zip
 unzip /tmp/manager.zip -d /var/lib/xema/manager
