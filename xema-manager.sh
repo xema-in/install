@@ -22,9 +22,14 @@ else
   ostype="Unknown"
 fi
 
+red=`tput setaf 1`
+green=`tput setaf 2`
+reset=`tput sgr0`
+
+echo  "${red}"
 echo "Detected Init Type: " $inittype
 echo "Detected OS Type: " $ostype
-
+echo  "${reset}"
 
 
 
