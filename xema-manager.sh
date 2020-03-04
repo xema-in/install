@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Detect Init System Type
 if [[ `/sbin/init --version` =~ upstart ]];
@@ -11,7 +11,7 @@ elif [[ -f /etc/init.d/cron && ! -h /etc/init.d/cron ]];
 then
   inittype="sysv"
 else
-  inittype="unknown"
+  inittype="Unknown"
 fi
 
 # Detect OS Type
