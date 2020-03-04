@@ -144,3 +144,4 @@ mkdir -p /var/lib/xema/manager/Files
 wget -c https://github.com/xema-in/manager/releases/latest/download/Manager.zip -O /tmp/manager.zip
 unzip -o /tmp/manager.zip -d /var/lib/xema/manager
 
+service xema-manager start
