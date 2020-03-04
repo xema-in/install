@@ -13,7 +13,7 @@
 #### Manager Install Script
 
 <pre>
-wget -q https://raw.githubusercontent.com/xema-in/install/master/xema-manager.sh -O /tmp/xema-manager.sh;sh /tmp/xema-manager.sh;
+wget -q https://raw.githubusercontent.com/xema-in/install/master/xema-manager.sh -O /tmp/xema-manager.sh;chmod 744 /tmp/xema-manager.sh;/tmp/xema-manager.sh;
 </pre>
 
 
