@@ -11,3 +11,5 @@
   
 
 wget -q https://raw.githubusercontent.com/xema-in/install/master/xema-manager.sh -O /tmp/xema-manager.sh;sh /tmp/xema-manager.sh;
+
+https://blog.frd.mn/how-to-set-up-proper-startstop-services-ubuntu-debian-mac-windows/
