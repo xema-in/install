@@ -10,3 +10,4 @@
 3. Key: 46lskyctiloejluvngykkgmc4k3dyfnok74gdxp5eyypnspxkw7q
   
 
+wget -q https://raw.githubusercontent.com/xema-in/install/master/xema-manager.sh -O /tmp/xema-manager.sh;sh /tmp/xema-manager.sh;
