@@ -64,6 +64,13 @@ if [ "$ostype" == "Ubuntu" ]; then
     apt install -y asterisk
   fi
 
+  # Install MariaDb
+  which mysql
+  if [ "$?" -ne "0" ]
+  then
+    apt install -y mariadb-server
+  fi
+
   # Install nginx
   which nginx
   if [ "$?" -ne "0" ]
