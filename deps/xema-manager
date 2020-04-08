@@ -17,6 +17,7 @@ APPBIN="/usr/bin/dotnet"
 APPARGS="/var/lib/xema/manager/Manager.dll"
 USER="root"
 GROUP="root"
+LOGFILE="/var/log/xema.log"
 
 # Include functions 
 set -e
@@ -24,7 +25,7 @@ set -e
 
 start() {
   printf "Starting '$NAME'... "
-  start-stop-daemon --start --chuid "$USER:$GROUP" --background --make-pidfile --pidfile /var/run/$NAME.pid --chdir "$APPDIR" --exec "$APPBIN" -- $APPARGS || true
+  start-stop-daemon --start --chuid "$USER:$GROUP" --background --make-pidfile --pidfile /var/run/$NAME.pid --chdir "$APPDIR" --startas $APPBIN --no-close -- $APPARGS >> $LOGFILE 2>&1 || true
   printf "done\n"
 }
 
