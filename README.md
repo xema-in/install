@@ -10,13 +10,14 @@ Xema lives in Ubuntu, the defacto operating system for many. At this point we su
 
 ### Installation
 
+> **Warning:** When executed, this script will install various packages in in your system and reconfigures the OS for Xema. Please run it in a disposable copy of your OS. You have been warned!
+
+
 > **Note:** You need to run this install script as **root**
 
 <pre>
 wget -q https://raw.githubusercontent.com/xema-in/install/master/xema-manager.sh -O /tmp/xema-manager.sh;chmod 744 /tmp/xema-manager.sh;/tmp/xema-manager.sh;
 </pre>
 
-
-> **Warning:** When executed, this script will install various packages in in your system and reconfigures the OS for Xema. Please run it in a disposable copy of your OS. You have been warned!
 
 
