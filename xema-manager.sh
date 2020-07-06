@@ -147,9 +147,12 @@ nginx -s reload
 
 mysql -u root -e "CREATE USER IF NOT EXISTS 'xema'@'localhost' IDENTIFIED BY 'xema';GRANT ALL PRIVILEGES ON *.* TO 'xema'@'localhost';FLUSH PRIVILEGES;"
 
+mkdir -p /var/lib/xema/manager
 
 rm -rf /tmp/manager.zip
 wget -c https://github.com/xema-in/manager/releases/latest/download/Manager.zip -O /tmp/manager.zip
 unzip -o /tmp/manager.zip -d /var/lib/xema/manager
+
+cp -n /var/lib/xema/manager/appsettings.default.json /var/lib/xema/manager/appsettings.json
 
 service xema-manager start
