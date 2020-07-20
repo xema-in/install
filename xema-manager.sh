@@ -18,6 +18,9 @@ fi
 if [[ $(lsb_release -i) = *Ubuntu* ]]; 
 then
   ostype="Ubuntu"
+elif [[ $(cat /etc/os-release | grep "^NAME=") = *CentOS* ]]; 
+then
+  ostype="CentOS"
 else
   ostype="Unknown"
 fi
@@ -26,7 +29,7 @@ red=`tput setaf 1`
 green=`tput setaf 2`
 reset=`tput sgr0`
 
-echo  "${red}"
+echo  "${green}"
 echo "Detected Init Type: " $inittype
 echo "Detected OS Type: " $ostype
 echo  "${reset}"
@@ -95,6 +98,66 @@ if [ "$ostype" == "Ubuntu" ]; then
     apt install -y dotnet-sdk-3.1
 
   fi
+elif [ "$ostype" == "CentOS" ]; then
+
+  # Install curl and wget
+  which curl
+  if [ "$?" -ne "0" ]
+  then
+    yum install -y curl
+  fi
+  
+  which wget
+  if [ "$?" -ne "0" ]
+  then
+    yum install -y wget
+  fi
+
+  which unzip
+  if [ "$?" -ne "0" ]
+  then
+    yum install -y unzip
+  fi
+
+  # Install Asterisk
+  which asterisk
+  if [ "$?" -ne "0" ]
+  then
+    echo  "${green}"
+    echo "Asterisk not found. Automatic installation not supported."
+    echo  "${reset}"
+  fi
+
+  # Install MariaDb
+  which mysql
+  if [ "$?" -ne "0" ]
+  then
+    wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/mariadb.repo -O /etc/yum.repos.d/mariadb.repo
+    yum install -y MariaDB-server
+  fi
+
+  # Install nginx
+  which nginx
+  if [ "$?" -ne "0" ]
+  then
+    yum install -y epel-release
+    yum install -y nginx
+  fi
+
+  # Install dotnet
+  which dotnet
+  if [ "$?" -ne "0" ]
+  then
+
+    if [[ $(cat /etc/os-release | grep "^VERSION_ID=") = *7* ]]; then
+      rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+    fi
+
+    yum install -y dotnet-sdk-2.2
+    yum install -y dotnet-sdk-3.1
+
+  fi
+
 fi
 
 
@@ -113,7 +176,7 @@ then
 
 elif [ "$inittype" == "systemd" ];
 then
-  # Ubuntu
+  # Ubuntu, CentOS
 
   ls /etc/systemd/system/multi-user.target.wants/xema-manager.service
   if [ "$?" -ne "0" ]
@@ -128,22 +191,39 @@ then
 fi
 
 # Configure nginx
-wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema.nginx -O /tmp/xema.nginx
-cp /tmp/xema.nginx /etc/nginx/sites-available/xema.nginx
 
-ls /etc/nginx/sites-enabled/xema.nginx
-if [ "$?" -ne "0" ]
-then
-  ln -s /etc/nginx/sites-available/xema.nginx /etc/nginx/sites-enabled/xema.nginx
+if [ "$ostype" == "Ubuntu" ]; then
+  wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema.nginx -O /tmp/xema.nginx
+  cp /tmp/xema.nginx /etc/nginx/sites-available/xema.nginx
+
+  ls /etc/nginx/sites-enabled/xema.nginx
+  if [ "$?" -ne "0" ]
+  then
+    ln -s /etc/nginx/sites-available/xema.nginx /etc/nginx/sites-enabled/xema.nginx
+  fi
+
+  ls /etc/nginx/sites-enabled/default
+  if [ "$?" -eq "0" ]
+  then
+    rm /etc/nginx/sites-enabled/default
+  fi
+
+  nginx -s reload
+elif [ "$ostype" == "CentOS" ]; then
+  wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema.nginx -O /tmp/xema.nginx
+  cp /tmp/xema.nginx /etc/nginx/conf.d/xema.conf
+
+  nginx -s reload
+
 fi
 
-ls /etc/nginx/sites-enabled/default
-if [ "$?" -eq "0" ]
-then
-  rm /etc/nginx/sites-enabled/default
+if [ "$ostype" == "Ubuntu" ]; then
+elif [ "$ostype" == "CentOS" ]; then
+  systemctl stop firewalld
+  systemctl disable firewalld
+  systemctl mask --now firewalld
+  service mariadb start
 fi
-
-nginx -s reload
 
 mysql -u root -e "CREATE USER IF NOT EXISTS 'xema'@'localhost' IDENTIFIED BY 'xema';GRANT ALL PRIVILEGES ON *.* TO 'xema'@'localhost';FLUSH PRIVILEGES;"
 
