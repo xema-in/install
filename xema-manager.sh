@@ -134,6 +134,8 @@ elif [ "$ostype" == "CentOS" ]; then
   then
     wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/mariadb.repo -O /etc/yum.repos.d/mariadb.repo
     yum install -y MariaDB-server
+    systemctl enable mariadb
+    service mariadb start
   fi
 
   # Install nginx
@@ -142,6 +144,8 @@ elif [ "$ostype" == "CentOS" ]; then
   then
     yum install -y epel-release
     yum install -y nginx
+    systemctl enable nginx
+    service nginx start
   fi
 
   # Install dotnet
@@ -222,7 +226,6 @@ elif [ "$ostype" == "CentOS" ]; then
   systemctl stop firewalld
   systemctl disable firewalld
   systemctl mask --now firewalld
-  service mariadb start
 fi
 
 mysql -u root -e "CREATE USER IF NOT EXISTS 'xema'@'localhost' IDENTIFIED BY 'xema';GRANT ALL PRIVILEGES ON *.* TO 'xema'@'localhost';FLUSH PRIVILEGES;"
