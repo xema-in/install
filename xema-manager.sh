@@ -222,6 +222,7 @@ elif [ "$ostype" == "CentOS" ]; then
 fi
 
 if [ "$ostype" == "Ubuntu" ]; then
+  echo ""
 elif [ "$ostype" == "CentOS" ]; then
   systemctl stop firewalld
   systemctl disable firewalld
