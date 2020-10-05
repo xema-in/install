@@ -74,13 +74,6 @@ if [ "$ostype" == "Ubuntu" ]; then
     apt install -y mariadb-server
   fi
 
-  # Install Redis
-  which redis-cli
-  if [ "$?" -ne "0" ]
-  then
-    apt install -y redis-server
-  fi
-
   # Install nginx
   which nginx
   if [ "$?" -ne "0" ]
