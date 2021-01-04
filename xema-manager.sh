@@ -232,6 +232,7 @@ fi
 mysql -u root -e "CREATE USER IF NOT EXISTS 'xema'@'localhost' IDENTIFIED BY 'xema';GRANT ALL PRIVILEGES ON *.* TO 'xema'@'localhost';FLUSH PRIVILEGES;"
 
 mkdir -p /var/lib/xema/manager
+cp -r /var/lib/xema/manager /var/lib/xema/manager.$(date '+%Y%m%d.%H')
 
 rm -rf /tmp/manager.zip
 wget -c https://github.com/xema-in/manager/releases/latest/download/Manager.zip -O /tmp/manager.zip
