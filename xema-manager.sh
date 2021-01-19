@@ -41,24 +41,8 @@ if [ "$ostype" == "Ubuntu" ]; then
   # Update APT
   apt update
 
-  # Install curl and wget
-  which curl
-  if [ "$?" -ne "0" ]
-  then
-    apt install -y curl
-  fi
-
-  which wget
-  if [ "$?" -ne "0" ]
-  then
-    apt install -y wget
-  fi
-
-  which unzip
-  if [ "$?" -ne "0" ]
-  then
-    apt install -y unzip
-  fi
+  # Install Tools
+  apt install -y curl wget unzip at
 
   # Install Asterisk
   which asterisk
