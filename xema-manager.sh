@@ -42,7 +42,7 @@ if [ "$ostype" == "Ubuntu" ]; then
   apt update
 
   # Install Tools
-  apt install -y curl wget unzip at
+  apt install -y curl wget unzip at git
 
   # Install Asterisk
   which asterisk
