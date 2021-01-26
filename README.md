@@ -1,16 +1,16 @@
 # Welcome!
 
-Xema is the product developed by a startup @TechSudoku based in India. We serve the Call Center operators with customized call flows. We are happy to see you here and ready to support your evaluation. You can write to us at support@xema.in
+Xema is a product developed by a startup @TechSudoku based in India. We serve the Call Center operators with customized call flows. We are happy to see you here and ready to support your evaluation. You can write to us at support@xema.in
 
 
-### Prerequisite
+### Prerequisites
 
 Xema lives in Ubuntu, the defacto operating system for many. At this point we support Ubuntu 18.
 
 
 ### Installation
 
-> **Warning:** When executed, this script will install various packages in in your system and reconfigures the OS for Xema. Please run it in a disposable copy of your OS. You have been warned!
+> **Warning:** When executed, this script will install various packages in your system and reconfigures the OS for Xema. Please run it in a disposable copy of your OS. You have been warned!
 
 
 > **Note:** You need to run this install script as **root**
