@@ -1,6 +1,6 @@
 # Welcome!
 
-Xema is the product developed by a small startup @TechSudoku based in India. We serve the Call Center operators with customized call flows. We are happy to see you here and ready to support your evaluation. You can write to us at support@xema.in
+Xema is the product developed by a startup @TechSudoku based in India. We serve the Call Center operators with customized call flows. We are happy to see you here and ready to support your evaluation. You can write to us at support@xema.in
 
 
 ### Prerequisite
