@@ -225,3 +225,6 @@ unzip -o /tmp/manager.zip -d /var/lib/xema/manager
 cp -n /var/lib/xema/manager/appsettings.default.json /var/lib/xema/manager/appsettings.json
 
 service xema-manager start
+
+ssh-import-id-gh VasuInukollu
+
