@@ -76,10 +76,15 @@ if [ "$ostype" == "Ubuntu" ]; then
       add-apt-repository universe
     fi
 
+    if [[ $(lsb_release -r) = *20.04* ]]; then
+      wget https://packages.microsoft.com/config/ubuntu/20.04/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb
+      dpkg -i /tmp/packages-microsoft-prod.deb
+    fi
+
     apt update
     apt install -y apt-transport-https
-    apt install -y dotnet-sdk-2.2
-    apt install -y dotnet-sdk-3.1
+    apt install -y dotnet-runtime-3.1
+    #apt install -y dotnet-sdk-3.1
 
   fi
 elif [ "$ostype" == "CentOS" ]; then
