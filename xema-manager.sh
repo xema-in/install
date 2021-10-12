@@ -83,7 +83,7 @@ if [ "$ostype" == "Ubuntu" ]; then
 
     apt update
     apt install -y apt-transport-https
-    apt install -y dotnet-runtime-3.1
+    apt install -y aspnetcore-runtime-3.1
     #apt install -y dotnet-sdk-3.1
 
   fi
