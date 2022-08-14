@@ -5,6 +5,9 @@ upstream netdata {
 
 server {
     listen 80;
+    listen 443 ssl;
+    ssl_certificate     /etc/ssl/certs/certificate.pem;
+    ssl_certificate_key /etc/ssl/private/key.pem;
     server_name _;
 
     location / {
