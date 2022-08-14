@@ -186,6 +186,9 @@ fi
 # Configure nginx
 
 if [ "$ostype" == "Ubuntu" ]; then
+
+  openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/key.pem -out /etc/ssl/certs/certificate.pem -subj "/CN=xema-manager"
+  
   wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema.nginx -O /tmp/xema.nginx
   cp /tmp/xema.nginx /etc/nginx/sites-available/xema.nginx
 
