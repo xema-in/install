@@ -219,6 +219,8 @@ elif [ "$ostype" == "CentOS" ]; then
 
 fi
 
+# Disable firewall
+
 if [ "$ostype" == "Ubuntu" ]; then
   echo ""
 elif [ "$ostype" == "CentOS" ]; then
@@ -226,6 +228,16 @@ elif [ "$ostype" == "CentOS" ]; then
   systemctl disable firewalld
   systemctl mask --now firewalld
 fi
+
+# Configure logrotate
+
+if [ "$ostype" == "Ubuntu" ]; then
+  wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/asterisk-master-csv -O /tmp/asterisk-master-csv
+  cp /tmp/asterisk-master-csv /etc/logrotate.d/asterisk-master-csv
+elif [ "$ostype" == "CentOS" ]; then
+  echo ""
+fi
+
 
 mysql -u root -e "CREATE USER IF NOT EXISTS 'xema'@'localhost' IDENTIFIED BY 'xema';GRANT ALL PRIVILEGES ON *.* TO 'xema'@'localhost';FLUSH PRIVILEGES;"
 
