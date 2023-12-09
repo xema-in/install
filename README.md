@@ -21,3 +21,16 @@ wget -q https://raw.githubusercontent.com/xema-in/install/master/xema-manager.sh
 
 
 
+### v2 install scripts
+
+
+Release channel
+<pre>
+wget -q https://raw.githubusercontent.com/xema-in/install/master/install-xema.sh -O /tmp/install-xema.sh;chmod 744 /tmp/install-xema.sh;/tmp/install-xema.sh;
+</pre>
+
+
+Dev channel
+<pre>
+wget -q https://raw.githubusercontent.com/xema-in/install/master/install-xema.sh -O /tmp/install-xema.sh;chmod 744 /tmp/install-xema.sh;/tmp/install-xema.sh -d;
+</pre>
