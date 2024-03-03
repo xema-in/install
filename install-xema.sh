@@ -342,14 +342,14 @@ function install_xema_dev_channel() {
     footer
 }
 
-# https://github.com/xema-in/manager/releases/download/prod/Manager.zip
+# https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip
 function install_xema_prod_channel() {
     header
 
     echo "Installing from ${green}$channel${reset} channel ..."
 
     if [ "$distro" == "Ubuntu" ]; then
-        wget -c https://github.com/xema-in/manager/releases/download/prod/Manager.zip -O /tmp/manager.zip
+        wget -c https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip -O /tmp/manager.zip
         unzip -o /tmp/manager.zip -d /var/lib/xema/manager
     fi
 
