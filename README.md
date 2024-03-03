@@ -5,7 +5,7 @@ Xema is a product developed by a startup @TechSudoku based in India. We serve th
 
 ### Prerequisites
 
-Xema lives in Ubuntu, the defacto operating system for many. At this point we support Ubuntu 18.
+Xema runs on Ubuntu, the operating system choice of cloud.
 
 
 ### Installation
@@ -15,22 +15,27 @@ Xema lives in Ubuntu, the defacto operating system for many. At this point we su
 
 > **Note:** You need to run this install script as **root**
 
+#### Version 1
+
+Supports Ubuntu 18
+
 <pre>
 wget -q https://raw.githubusercontent.com/xema-in/install/master/xema-manager.sh -O /tmp/xema-manager.sh;chmod 744 /tmp/xema-manager.sh;/tmp/xema-manager.sh;
 </pre>
 
 
 
-### v2 install scripts
+#### Version 2
 
+Supports Ubuntu 22
 
-Release channel
 <pre>
 wget -q https://raw.githubusercontent.com/xema-in/install/master/install-xema.sh -O /tmp/install-xema.sh;chmod 744 /tmp/install-xema.sh;/tmp/install-xema.sh;
 </pre>
 
 
-Dev channel
+#### Dev Branch
+
 <pre>
 wget -q https://raw.githubusercontent.com/xema-in/install/master/install-xema.sh -O /tmp/install-xema.sh;chmod 744 /tmp/install-xema.sh;/tmp/install-xema.sh -d;
 </pre>

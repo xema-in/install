@@ -1,0 +1,11 @@
+v1 installer: xema-manager.sh
+v2 installer: install-xema.sh
+dev branch: install-xema.sh -d
+
+
+
+Notes
+=====
+
+cd /mnt/c/Users/xxxx/source/xema/install
+
