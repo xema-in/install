@@ -245,7 +245,7 @@ mkdir -p /var/lib/xema/manager
 cp -r /var/lib/xema/manager /var/lib/xema/manager.$(date '+%Y%m%d.%H')
 
 rm -rf /tmp/manager.zip
-wget -c https://github.com/xema-in/manager/releases/latest/download/Manager.zip -O /tmp/manager.zip
+wget -c https://github.com/xema-in/manager/releases/download/v1.0/Manager.zip -O /tmp/manager.zip
 unzip -o /tmp/manager.zip -d /var/lib/xema/manager
 
 cp -n /var/lib/xema/manager/appsettings.default.json /var/lib/xema/manager/appsettings.json
