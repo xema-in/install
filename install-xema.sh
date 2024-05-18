@@ -141,7 +141,7 @@ function check_supported_matrix() {
         supported=no
     elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "22" ]]; then
         installable=yes
-        supported=no
+        supported=yes
 
     # wsl running ubuntu
     elif [[ $hostsys == "WSL" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "18" ]]; then
@@ -169,7 +169,7 @@ function print_support_matrix() {
     echo -e "+------------------+----------+----------+----------+----------+"
     echo -e "| Distro           | Ver. 1   | Ver. 2   | Ver. 3   | Ver. 4   |"
     echo -e "+------------------+----------+----------+----------+----------+"
-    echo -e "| Ubuntu           | ${red}16.04${reset} \u274c | ${green}18.04${reset} \u2705 | ${green}20.04${reset}    | ${red}22.04${reset}    |"
+    echo -e "| Ubuntu           | ${red}16.04${reset} \u274c | ${green}18.04${reset} \u2705 | ${green}20.04${reset}    | ${green}22.04${reset} \u2705 |"
     echo -e "| CentOS           | ${red}4${reset}        | ${red}5${reset}        | ${red}6${reset}        | ${red}7${reset}        |"
     #    echo -e "| WSL              | ${red}1${reset}        | ${red}2${reset}        |          |          |"
     echo -e "|                  |          |          |          |          |"
