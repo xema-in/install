@@ -9,3 +9,5 @@ Notes
 
 cd /mnt/c/Users/xxxx/source/xema/install
 
+
+scp -r * node:/root/xema-installer
