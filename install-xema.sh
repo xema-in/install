@@ -87,6 +87,7 @@ function detect_ubuntu_version() {
     18.*) oever="18" ;;
     20.*) oever="20" ;;
     22.*) oever="22" ;;
+    # 24.*) oever="24" ;;
     *) oever="Unknown" ;;
     esac
 
@@ -247,16 +248,32 @@ function ubuntu_dependencies() {
         apt -qqq install -y asterisk
     fi
 
-    # TODO: find a better way to detect mariadb installation
-    which mysql >/dev/null
-    if [ "$?" -ne "0" ]; then
-        apt -qqq install -y mariadb-server
-    fi
-
     which nginx >/dev/null
     if [ "$?" -ne "0" ]; then
         apt -qqq install -y nginx
     fi
+
+    install_mariadb="no"
+
+    which mysql >/dev/null
+    if [ "$?" -ne "0" ]; then
+        # apt -qqq install -y mariadb-server
+        install_mariadb="yes"
+    fi
+
+    mysql -e "show databases"
+    if [ "$?" -ne "0" ]; then
+        install_mariadb="yes"
+    fi
+
+    if [ "$install_mariadb" == "yes" ]; then
+        apt -qqq install -y mariadb-server
+    fi
+
+    # ensure services are running
+    systemctl start asterisk
+    systemctl start nginx
+    systemctl start mariadb
 
     footer
 }
@@ -272,8 +289,7 @@ function ubuntu_dotnet() {
     elif [ "$oever" == "20" ]; then
         echo "${red}$LINENO: Not implemented${reset}"
     elif [ "$oever" == "22" ]; then
-        #echo "${red}$LINENO: Not implemented${reset}"
-        apt -qqq install aspnetcore-runtime-6.0
+        apt -qqq install aspnetcore-runtime-8.0
     else
         echo "${red}$LINENO: Not implemented${reset}"
     fi
