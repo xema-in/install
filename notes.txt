@@ -8,6 +8,6 @@ Notes
 =====
 
 cd /mnt/c/Users/xxxx/source/xema/install
-
+cd /mnt/e/xema/install/
 
 scp -r * node:/root/xema-installer

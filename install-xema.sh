@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/bash
 
 # https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux
 # https://stackoverflow.com/questions/17336915/return-value-in-a-bash-function
@@ -151,7 +151,7 @@ function check_supported_matrix() {
         installable=no
         supported=no
     elif [[ $hostsys == "WSL" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "22" ]]; then
-        installable=no
+        installable=yes
         supported=no
 
     # other
@@ -289,7 +289,7 @@ function ubuntu_dotnet() {
     elif [ "$oever" == "20" ]; then
         echo "${red}$LINENO: Not implemented${reset}"
     elif [ "$oever" == "22" ]; then
-        apt -qqq install aspnetcore-runtime-8.0
+        apt -qqq install -y aspnetcore-runtime-8.0
     else
         echo "${red}$LINENO: Not implemented${reset}"
     fi
