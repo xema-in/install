@@ -356,7 +356,7 @@ function install_xema_dev_channel() {
 
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/dev/Manager.zip -O /tmp/manager.zip
-        unzip -o /tmp/manager.zip -d /var/lib/xema/manager
+        unzip -qo /tmp/manager.zip -d /var/lib/xema/manager
     fi
 
     if [ "$distro" == "CentOS" ]; then
@@ -378,7 +378,7 @@ function install_xema_prod_channel() {
 
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip -O /tmp/manager.zip
-        unzip -o /tmp/manager.zip -d /var/lib/xema/manager
+        unzip -qo /tmp/manager.zip -d /var/lib/xema/manager
     fi
 
     if [ "$distro" == "CentOS" ]; then
