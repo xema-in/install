@@ -261,7 +261,7 @@ function ubuntu_dependencies() {
         install_mariadb="yes"
     fi
 
-    mysql -e "show databases"
+    mysql -e "show databases" >/dev/null
     if [ "$?" -ne "0" ]; then
         install_mariadb="yes"
     fi
@@ -271,9 +271,21 @@ function ubuntu_dependencies() {
     fi
 
     # ensure services are running
-    systemctl start asterisk
-    systemctl start nginx
-    systemctl start mariadb
+    if [[ $hostsys == "WSL" && $kernel == "Linux" ]]; then
+        # wsl
+
+        service asterisk start
+        service nginx start
+        service mariadb start
+
+    elif [[ $hostsys == "Linux" && $kernel == "Linux" ]]; then
+        # vm, physical
+
+        systemctl start asterisk
+        systemctl start nginx
+        systemctl start mariadb
+
+    fi
 
     footer
 }
@@ -343,7 +355,7 @@ function install_xema_dev_channel() {
     echo "Installing from ${green}$channel${reset} channel ..."
 
     if [ "$distro" == "Ubuntu" ]; then
-        wget -c https://github.com/xema-in/manager/releases/download/dev/Manager.zip -O /tmp/manager.zip
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/dev/Manager.zip -O /tmp/manager.zip
         unzip -o /tmp/manager.zip -d /var/lib/xema/manager
     fi
 
@@ -365,7 +377,7 @@ function install_xema_prod_channel() {
     echo "Installing from ${green}$channel${reset} channel ..."
 
     if [ "$distro" == "Ubuntu" ]; then
-        wget -c https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip -O /tmp/manager.zip
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip -O /tmp/manager.zip
         unzip -o /tmp/manager.zip -d /var/lib/xema/manager
     fi
 

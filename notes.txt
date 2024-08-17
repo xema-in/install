@@ -2,7 +2,14 @@ v1 installer: xema-manager.sh
 v2 installer: install-xema.sh
 dev branch: install-xema.sh -d
 
+===================
 
+systemctl is not available in WSL
+
+systemctl status xema-manager --- does not work
+service xema-manager status --- works fine
+
+===================
 
 Notes
 =====
