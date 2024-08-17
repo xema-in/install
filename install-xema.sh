@@ -261,7 +261,7 @@ function ubuntu_dependencies() {
         install_mariadb="yes"
     fi
 
-    mysql -e "show databases"
+    mysql -e "show databases" >/dev/null
     if [ "$?" -ne "0" ]; then
         install_mariadb="yes"
     fi
