@@ -271,9 +271,21 @@ function ubuntu_dependencies() {
     fi
 
     # ensure services are running
-    systemctl start asterisk
-    systemctl start nginx
-    systemctl start mariadb
+    if [[ $hostsys == "WSL" && $kernel == "Linux" ]]; then
+        # wsl
+
+        service asterisk start
+        service nginx start
+        service mariadb start
+
+    elif [[ $hostsys == "Linux" && $kernel == "Linux" ]]; then
+        # vm, physical
+
+        systemctl start asterisk
+        systemctl start nginx
+        systemctl start mariadb
+
+    fi
 
     footer
 }
