@@ -87,6 +87,7 @@ function detect_ubuntu_version() {
     18.*) oever="18" ;;
     20.*) oever="20" ;;
     22.*) oever="22" ;;
+    24.*) oever="24" ;;
     # 24.*) oever="24" ;;
     *) oever="Unknown" ;;
     esac
@@ -142,6 +143,9 @@ function check_supported_matrix() {
     elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "22" ]]; then
         installable=yes
         supported=yes
+    elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "24" ]]; then
+        installable=yes
+        supported=no
 
     # wsl running ubuntu
     elif [[ $hostsys == "WSL" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "18" ]]; then
