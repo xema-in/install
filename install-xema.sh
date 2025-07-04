@@ -348,6 +348,8 @@ function ubuntu_dotnet() {
         echo "${red}$LINENO: Not implemented${reset}"
     elif [ "$oever" == "22" ]; then
         apt -qqq install -y aspnetcore-runtime-8.0
+    elif [ "$oever" == "24" ]; then
+        apt -qqq install -y aspnetcore-runtime-8.0
     else
         echo "${red}$LINENO: Not implemented${reset}"
     fi
