@@ -5,6 +5,24 @@
 # https://www.gnu.org/software/bash/manual/html_node/Bash-Variables.html#index-FUNCNAME
 # https://www.redhat.com/sysadmin/arguments-options-bash-scripts
 
+
+# Define the support matrix in a central place
+function define_support_matrix() {
+    # Define arrays for each configuration
+    # Format: distro|hostsys|kernel|version|installable|supported|details
+    SUPPORT_MATRIX=(
+        "Ubuntu|Linux|Linux|16|yes|no|Installable, unsupported"
+        "Ubuntu|Linux|Linux|18|yes|yes|Fully supported"
+        "Ubuntu|Linux|Linux|20|yes|no|Installable, unsupported"
+        "Ubuntu|Linux|Linux|22|yes|yes|Fully supported"
+        "Ubuntu|Linux|Linux|24|yes|no|Installable, unsupported"
+        "Ubuntu|WSL|Linux|18|no|no|Not supported"
+        "Ubuntu|WSL|Linux|20|no|no|Not supported"
+        "Ubuntu|WSL|Linux|22|yes|no|Installable, unsupported"
+        "CentOS|Linux|Linux|4|no|no|Not implemented"
+    )
+}
+
 function set_colors() {
     red=$(tput setaf 1)
     green=$(tput setaf 2)
@@ -130,39 +148,29 @@ function check_supported_matrix() {
 
     log "${red}$hostsys $kernel $distro $oever${reset}"
 
-    # linux kernel running ubuntu
-    if [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "16" ]]; then
-        installable=yes
-        supported=no
-    elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "18" ]]; then
-        installable=yes
-        supported=yes
-    elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "20" ]]; then
-        installable=yes
-        supported=no
-    elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "22" ]]; then
-        installable=yes
-        supported=yes
-    elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "24" ]]; then
-        installable=yes
-        supported=no
+    # Call the common function to define the support matrix
+    define_support_matrix
 
-    # wsl running ubuntu
-    elif [[ $hostsys == "WSL" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "18" ]]; then
-        installable=no
-        supported=no
-    elif [[ $hostsys == "WSL" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "20" ]]; then
-        installable=no
-        supported=no
-    elif [[ $hostsys == "WSL" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "22" ]]; then
-        installable=yes
-        supported=no
-
-    # other
-    elif [[ $distro == "Unknown" && $oever == "2" ]]; then
-        installable=no
-        supported=no
-    fi
+    # Check the current configuration against the matrix
+    for config in "${SUPPORT_MATRIX[@]}"; do
+        # More compatible way to split the string
+        OLD_IFS="$IFS"
+        IFS="|"
+        set -- $config
+        conf_distro="$1"
+        conf_hostsys="$2"
+        conf_kernel="$3"
+        conf_version="$4"
+        conf_installable="$5"
+        conf_supported="$6"
+        IFS="$OLD_IFS"
+        
+        if [[ $distro == "$conf_distro" && $hostsys == "$conf_hostsys" && $kernel == "$conf_kernel" && $oever == "$conf_version" ]]; then
+            installable="$conf_installable"
+            supported="$conf_supported"
+            break
+        fi
+    done
 
     footer installable="$installable",supported="$supported"
 }
@@ -170,14 +178,48 @@ function check_supported_matrix() {
 function print_support_matrix() {
     header
 
-    echo -e "+------------------+----------+----------+----------+----------+"
-    echo -e "| Distro           | Ver. 1   | Ver. 2   | Ver. 3   | Ver. 4   |"
-    echo -e "+------------------+----------+----------+----------+----------+"
-    echo -e "| Ubuntu           | ${red}16.04${reset} \u274c | ${green}18.04${reset} \u2705 | ${green}20.04${reset}    | ${green}22.04${reset} \u2705 |"
-    echo -e "| CentOS           | ${red}4${reset}        | ${red}5${reset}        | ${red}6${reset}        | ${red}7${reset}        |"
-    #    echo -e "| WSL              | ${red}1${reset}        | ${red}2${reset}        |          |          |"
-    echo -e "|                  |          |          |          |          |"
-    echo -e "+------------------+----------+----------+----------+----------+"
+    # Call the common function to define the support matrix
+    define_support_matrix
+
+    # Table header
+    printf "+------------------+----------+----------+----------+\n"
+    printf "| %-16s | %-8s | %-8s | %-8s |\n" "Environment" "Version" "Install" "Support"
+    printf "+------------------+----------+----------+----------+\n"
+    
+    # Loop through the support matrix to print each configuration
+    for config in "${SUPPORT_MATRIX[@]}"; do
+        # More compatible way to split the string
+        OLD_IFS="$IFS"
+        IFS="|"
+        set -- $config
+        conf_distro="$1"
+        conf_hostsys="$2"
+        conf_kernel="$3"
+        conf_version="$4"
+        conf_installable="$5"
+        conf_supported="$6"
+        conf_details="$7"
+        IFS="$OLD_IFS"
+                
+        # Format the install and support status with fixed column width
+        if [[ $conf_installable == "yes" ]]; then
+            install_mark="   ${green}✅${reset}   "
+        else
+            install_mark="   ${red}❌${reset}   "
+        fi
+        
+        if [[ $conf_supported == "yes" ]]; then
+            support_mark="   ${green}✅${reset}   "
+        else
+            support_mark="   ${red}❌${reset}   "
+        fi
+        
+        # Print the row with fixed column widths
+        printf "| %-16s | %-8s | %-8s | %-8s |\n" "$conf_distro ($conf_hostsys)" "$conf_version" "$install_mark" "$support_mark"
+    done
+    
+    # Footer line
+    printf "+------------------+----------+----------+----------+\n"
 
     footer
 }
@@ -213,8 +255,8 @@ function xema_capable_operating_environment() {
                 # echo "${green}"
                 echo -e "Distro:  " $distro
                 echo -e "Version: " $oever
-                if [[ $supported == "yes" ]]; then echo -e "Support:  \u2705"; fi
-                if [[ $supported == "no" ]]; then echo -e "Support:  \u274c"; fi
+                if [[ $supported == "yes" ]]; then echo -e "Support:  ${green}✅${reset}"; fi
+                if [[ $supported == "no" ]]; then echo -e "Support:  ${red}❌${reset}"; fi
                 # echo "${reset}"
             fi
         fi
@@ -748,10 +790,11 @@ function setup_and_start_services() {
 help() {
     # Display Help
     echo "Install Xema Platform software."
-    echo "Syntax: ./install-xema.sh [-d|h]"
+    echo "Syntax: ./install-xema.sh [-d|h|m]"
     echo "options:"
     echo "h     Print this Help."
     echo "d     Install the Dev release."
+    echo "m     Display the OS support matrix."
     echo
 }
 
@@ -791,7 +834,8 @@ function detect_installed_channel() {
 
 # finally
 channel="release"
-while getopts hd option; do
+display_matrix="false"
+while getopts hdm option; do
     case $option in
     h) # display Help
         help
@@ -800,10 +844,13 @@ while getopts hd option; do
     d) # Dev release
         channel="dev"
         ;;
+    m) # Display support matrix
+        display_matrix="true"
+        ;;
     \?) # Invalid option
         echo "Error: Invalid option"
         echo
-        Help
+        help
         exit
         ;;
     esac
@@ -812,6 +859,12 @@ done
 #detect_installed_channel
 
 log "channel: ""${green}$channel${reset}"
+
+# Display just the support matrix if requested
+if [[ $display_matrix == "true" ]]; then
+    print_support_matrix
+    exit 0
+fi
 
 depth=0
 set_colors
