@@ -81,6 +81,25 @@ if [ "$ostype" == "Ubuntu" ]; then
       dpkg -i /tmp/packages-microsoft-prod.deb
     fi
 
+    if [[ $(lsb_release -r) = *22.04* ]]; then
+      wget https://packages.microsoft.com/config/ubuntu/22.04/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb
+      dpkg -i /tmp/packages-microsoft-prod.deb
+    fi
+
+    if [[ $(lsb_release -r) = *24.04* ]]; then
+      wget http://security.ubuntu.com/ubuntu/pool/main/o/openssl1.0/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb -O /tmp/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+      wget http://archive.ubuntu.com/ubuntu/pool/main/i/icu/libicu66_66.1-2ubuntu2_amd64.deb -O /tmp/libicu66_66.1-2ubuntu2_amd64.deb
+
+      dpkg -i /tmp/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+      dpkg -i /tmp/libicu66_66.1-2ubuntu2_amd64.deb
+
+      wget https://download.visualstudio.microsoft.com/download/pr/fea239ad-fd47-4764-aa71-6a147a82f632/20ee58b0bf08ae9f6e76e37ba3765c57/dotnet-runtime-3.1.32-linux-x64.tar.gz -O /tmp/dotnet-runtime-3.1.32-linux-x64.tar.gz
+      wget https://download.visualstudio.microsoft.com/download/pr/39c3ef4c-73c7-4248-8c54-0865d5feb8b2/3420b1ff6b0f36e63044d6f7a794b579/aspnetcore-runtime-3.1.32-linux-x64.tar.gz -O /tmp/aspnetcore-runtime-3.1.32-linux-x64.tar.gz
+
+      tar zxf /tmp/dotnet-runtime-3.1.32-linux-x64.tar.gz -C /usr/lib/dotnet/
+      tar zxf /tmp/aspnetcore-runtime-3.1.32-linux-x64.tar.gz -C /usr/lib/dotnet/
+    fi
+
     apt update
     apt install -y apt-transport-https
     apt install -y aspnetcore-runtime-3.1
