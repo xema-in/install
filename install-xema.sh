@@ -446,6 +446,8 @@ function backup_existing_installation() {
     mkdir -p /var/lib/xema/manager
     cp -r /var/lib/xema/manager /var/lib/xema/manager.$(date '+%Y%m%d.%H')
     rm -rf /tmp/manager.zip
+    rm -f /tmp/appsettings.json
+    cp -f /var/lib/xema/manager/appsettings.json /tmp/appsettings.json
 
     footer
 }
@@ -453,7 +455,9 @@ function backup_existing_installation() {
 function add_default_settings() {
     header
 
-    cp -n /var/lib/xema/manager/appsettings.default.json /var/lib/xema/manager/appsettings.json
+    cp -f /tmp/appsettings.json /var/lib/xema/manager/appsettings.json
+    # cp -n /var/lib/xema/manager/appsettings.default.json /var/lib/xema/manager/appsettings.json
+    cp --update=none /var/lib/xema/manager/appsettings.default.json /var/lib/xema/manager/appsettings.json
 
     footer
 }
