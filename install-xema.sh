@@ -11,15 +11,12 @@ function define_support_matrix() {
     # Define arrays for each configuration
     # Format: distro|hostsys|kernel|version|installable|supported|details
     SUPPORT_MATRIX=(
-        "Ubuntu|Linux|Linux|16|yes|no|Installable, unsupported"
-        "Ubuntu|Linux|Linux|18|yes|yes|Fully supported"
-        "Ubuntu|Linux|Linux|20|yes|no|Installable, unsupported"
-        "Ubuntu|Linux|Linux|22|yes|yes|Fully supported"
-        "Ubuntu|Linux|Linux|24|yes|no|Installable, unsupported"
-        "Ubuntu|WSL|Linux|18|no|no|Not supported"
-        "Ubuntu|WSL|Linux|20|no|no|Not supported"
-        "Ubuntu|WSL|Linux|22|yes|no|Installable, unsupported"
-        "CentOS|Linux|Linux|4|no|no|Not implemented"
+        "Ubuntu|Linux|Linux|20|yes|no"
+        "Ubuntu|Linux|Linux|22|yes|yes"
+        "Ubuntu|Linux|Linux|24|yes|yes"
+        "Ubuntu|Linux|Linux|25|yes|no"
+        "CentOS|Linux|Linux|4|no|no"
+        "Ubuntu|WSL|Linux|25|yes|no"
     )
 }
 
@@ -198,7 +195,6 @@ function print_support_matrix() {
         conf_version="$4"
         conf_installable="$5"
         conf_supported="$6"
-        conf_details="$7"
         IFS="$OLD_IFS"
                 
         # Format the install and support status with fixed column width

@@ -27,7 +27,7 @@ wget -q https://raw.githubusercontent.com/xema-in/install/master/xema-manager.sh
 
 #### Version 2
 
-Supports Ubuntu 22
+Supports Ubuntu 24, 22
 
 <pre>
 wget -q https://raw.githubusercontent.com/xema-in/install/master/install-xema.sh -O /tmp/install-xema.sh;chmod 744 /tmp/install-xema.sh;/tmp/install-xema.sh;
