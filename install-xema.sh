@@ -295,6 +295,11 @@ function ubuntu_dependencies() {
         apt -qqq install -y nginx
     fi
 
+    which rabbitmq-server >/dev/null
+    if [ "$?" -ne "0" ]; then
+        apt -qqq install -y rabbitmq-server
+    fi
+
     install_mariadb="no"
 
     which mysql >/dev/null
@@ -319,6 +324,7 @@ function ubuntu_dependencies() {
         service asterisk start
         service nginx start
         service mariadb start
+        service rabbitmq-server start
 
     elif [[ $hostsys == "Linux" && $kernel == "Linux" ]]; then
         # vm, physical
@@ -326,6 +332,7 @@ function ubuntu_dependencies() {
         systemctl start asterisk
         systemctl start nginx
         systemctl start mariadb
+        systemctl start rabbitmq-server
 
     fi
 
