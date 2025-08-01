@@ -300,9 +300,14 @@ function ubuntu_dependencies() {
         apt -qqq install -y rabbitmq-server
     fi
 
-    which valkey-server >/dev/null
+    # which valkey-server >/dev/null
+    # if [ "$?" -ne "0" ]; then
+    #     apt -qqq install -y valkey-server
+    # fi
+
+    which redis-server >/dev/null
     if [ "$?" -ne "0" ]; then
-        apt -qqq install -y valkey-server
+        apt -qqq install -y redis-server
     fi
 
     install_mariadb="no"

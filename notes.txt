@@ -18,3 +18,13 @@ cd /mnt/c/Users/xxxx/source/xema/install
 cd /mnt/e/xema/install/
 
 scp -r * node:/root/xema-installer
+
+
+======
+
+wget -q https://raw.githubusercontent.com/xema-in/install/master/install-xema.sh -O /tmp/install-xema.sh;chmod 744 /tmp/install-xema.sh;/tmp/install-xema.sh -d;
+
+if this does not work, try the following:
+
+wget -N -q https://raw.githubusercontent.com/xema-in/install/master/install-xema.sh -O /tmp/install-xema.sh;chmod 744 /tmp/install-xema.sh;/tmp/install-xema.sh -d;
+
