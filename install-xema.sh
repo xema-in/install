@@ -335,7 +335,8 @@ function ubuntu_dependencies() {
         service nginx start
         service mariadb start
         service rabbitmq-server start
-        service valkey-server start
+        # service valkey-server start
+        service redis-server start
 
     elif [[ $hostsys == "Linux" && $kernel == "Linux" ]]; then
         # vm, physical
@@ -344,7 +345,8 @@ function ubuntu_dependencies() {
         systemctl start nginx
         systemctl start mariadb
         systemctl start rabbitmq-server
-        systemctl start valkey-server
+        # systemctl start valkey-server
+        systemctl start redis-server
         
     fi
 
