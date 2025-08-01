@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # https://stackoverflow.com/questions/3466166/how-to-check-if-running-in-cygwin-mac-or-linux
 # https://stackoverflow.com/questions/17336915/return-value-in-a-bash-function
