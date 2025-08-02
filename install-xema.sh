@@ -267,7 +267,7 @@ function install_tools() {
 
     if [ "$distro" == "Ubuntu" ]; then
         apt -qqq update
-        apt -qqq install -y curl wget unzip at git
+        apt -qqq install -y curl wget unzip at git sngrep
     fi
 
     if [ "$distro" == "CentOS" ]; then
