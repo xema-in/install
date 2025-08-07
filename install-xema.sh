@@ -267,7 +267,8 @@ function install_tools() {
 
     if [ "$distro" == "Ubuntu" ]; then
         apt -qqq update
-        apt -qqq install -y curl wget unzip at git sngrep
+        apt -qqq install -y curl wget unzip at sngrep
+        # apt -qqq install -y git sipsak linphone-cli
     fi
 
     if [ "$distro" == "CentOS" ]; then
