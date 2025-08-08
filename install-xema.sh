@@ -12,7 +12,7 @@ function define_support_matrix() {
     # Format: distro|hostsys|kernel|version|installable|supported|details
     SUPPORT_MATRIX=(
         "Ubuntu|Linux|Linux|20|no|no"
-        "Ubuntu|Linux|Linux|22|yes|yes"
+        "Ubuntu|Linux|Linux|22|no|no"
         "Ubuntu|Linux|Linux|24|yes|yes"
         "Ubuntu|Linux|Linux|25|yes|no"
         "CentOS|Linux|Linux|4|no|no"
