@@ -311,6 +311,11 @@ function ubuntu_dependencies() {
         apt -qqq install -y redis-server
     fi
 
+    which prometheus >/dev/null
+    if [ "$?" -ne "0" ]; then
+        apt -qqq install -y prometheus
+    fi
+
     install_mariadb="no"
 
     which mysql >/dev/null
