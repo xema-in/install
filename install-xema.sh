@@ -137,8 +137,8 @@ function detect_distro() {
     footer distro="$distro"
 }
 
-# variable supported, installable
-function check_supported_matrix() {
+# variable $supported, $installable
+function check_support_matrix() {
     header
     supported="no"
     installable="no"
@@ -261,8 +261,8 @@ function xema_capable_operating_environment() {
         if [[ ! $distro = *Ubuntu* ]]; then
             echo "${red}$distro Linux Distribution is not supported.${reset}"
         else
-            log "-> check_supported_matrix"
-            check_supported_matrix
+            log "-> check_support_matrix"
+            check_support_matrix
 
             if [[ $installable == "yes" && $supported == "no" ]]; then
                 log "-> print_support_matrix"
