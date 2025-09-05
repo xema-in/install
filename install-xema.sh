@@ -225,19 +225,19 @@ function install_tools_and_binaries() {
     header
     installed="no"
 
-    log "dependency -> xema_capable_operating_environment"
+    log "-> xema_capable_operating_environment"
     xema_capable_operating_environment
 
     if [[ $installable == "yes" ]]; then
-        log "dependency -> install_tools"
+        log "-> install_tools"
         echo "${green}Installing tools ...${reset}"
         install_tools
 
-        log "dependency -> install_dependencies"
+        log "-> install_dependencies"
         echo "${green}Installing dependencies ...${reset}"
         install_dependencies
 
-        log "dependency -> install_xema_binary"
+        log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
 
@@ -250,22 +250,22 @@ function install_tools_and_binaries() {
 function xema_capable_operating_environment() {
     header
 
-    log "dependency -> detect_host"
+    log "-> detect_host"
     detect_host
     if [[ ! $kernel = *Linux* ]]; then
         echo "${red}$kernel Environment is not supported.${reset}"
     else
-        log "dependency -> detect_distro and version"
+        log "-> detect_distro and version"
         detect_distro
         # detect_distro also calls version detection
         if [[ ! $distro = *Ubuntu* ]]; then
             echo "${red}$distro Linux Distribution is not supported.${reset}"
         else
-            log "dependency -> check_supported_matrix"
+            log "-> check_supported_matrix"
             check_supported_matrix
 
             if [[ $installable == "yes" && $supported == "no" ]]; then
-                log "dependency -> print_support_matrix"
+                log "-> print_support_matrix"
                 print_support_matrix
                 echo "${red}Unsupported configuration.${reset} $hostsys $kernel $distro $oever"
                 echo "${red}!!! Install at your own risk !!! ${reset}"
@@ -427,12 +427,12 @@ function install_xema_binary() {
     backup_existing_installation
 
     if [ "$channel" == "release" ]; then
-        log "dependency -> install_xema_prod_channel"
+        log "-> install_xema_prod_channel"
         install_xema_prod_channel
     fi
 
     if [ "$channel" == "dev" ]; then
-        log "dependency -> install_xema_dev_channel"
+        log "-> install_xema_dev_channel"
         install_xema_dev_channel
     fi
 
@@ -824,13 +824,13 @@ function reload_prometheus() {
 function install_and_configure_system() {
     header
 
-    log "dependency -> install_tools_and_binaries"
+    log "-> install_tools_and_binaries"
     install_tools_and_binaries
 
-    log "dependency -> configure_components"
+    log "-> configure_components"
     configure_components
 
-    log "dependency -> reload_configurations"
+    log "-> reload_configurations"
     reload_configurations
 
     footer
@@ -841,7 +841,7 @@ function setup_and_start_services() {
     header
     started="no"
 
-    log "dependency -> install_and_configure_system"
+    log "-> install_and_configure_system"
     install_and_configure_system
 
     if [[ $configured == "yes" ]]; then
@@ -872,7 +872,7 @@ function bootstrap() {
 
     echo "Selected ${green}$channel${reset} channel ..."
 
-    log "dependency -> setup_and_start_services"
+    log "-> setup_and_start_services"
     setup_and_start_services
 
     if [[ $started == "yes" ]]; then
