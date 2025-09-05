@@ -220,6 +220,33 @@ function print_support_matrix() {
     footer
 }
 
+# variable $installed
+function install_tools_and_binaries() {
+    header
+    installed="no"
+
+    log "dependency -> xema_capable_operating_environment"
+    xema_capable_operating_environment
+
+    if [[ $installable == "yes" ]]; then
+        log "dependency -> install_tools"
+        echo "${green}Installing tools ...${reset}"
+        install_tools
+
+        log "dependency -> install_dependencies"
+        echo "${green}Installing dependencies ...${reset}"
+        install_dependencies
+
+        log "dependency -> install_xema_binary"
+        echo "${green}Installing Xema Manager ...${reset}"
+        install_xema_binary
+
+        installed="yes"
+    fi
+
+    footer installed="$installed"
+}
+
 function xema_capable_operating_environment() {
     header
 
@@ -261,7 +288,6 @@ function xema_capable_operating_environment() {
     footer
 }
 
-# tools
 function install_tools() {
     header
 
@@ -273,6 +299,26 @@ function install_tools() {
 
     if [ "$distro" == "CentOS" ]; then
         echo "${red}$LINENO: Not implemented${reset}"
+    fi
+
+    if [ "$distro" == "Unknown" ]; then
+        echo "${red}$LINENO: $distro OS${reset}"
+    fi
+
+    footer
+}
+
+function install_dependencies() {
+    header
+
+    if [ "$distro" == "Ubuntu" ]; then
+        ubuntu_dependencies
+        ubuntu_dotnet
+    fi
+
+    if [ "$distro" == "CentOS" ]; then
+        centos_dependencies
+        centos_dotnet
     fi
 
     if [ "$distro" == "Unknown" ]; then
@@ -333,29 +379,6 @@ function ubuntu_dependencies() {
         apt -qqq install -y mariadb-server
     fi
 
-    # ensure services are running
-    if [[ $hostsys == "WSL" && $kernel == "Linux" ]]; then
-        # wsl
-
-        service asterisk start
-        service nginx start
-        service mariadb start
-        service rabbitmq-server start
-        # service valkey-server start
-        service redis-server start
-
-    elif [[ $hostsys == "Linux" && $kernel == "Linux" ]]; then
-        # vm, physical
-
-        systemctl start asterisk
-        systemctl start nginx
-        systemctl start mariadb
-        systemctl start rabbitmq-server
-        # systemctl start valkey-server
-        systemctl start redis-server
-        
-    fi
-
     footer
 }
 
@@ -398,18 +421,51 @@ function centos_dotnet() {
     footer
 }
 
-# asterisk
-function install_dependencies() {
+function install_xema_binary() {
     header
 
+    backup_existing_installation
+
+    if [ "$channel" == "release" ]; then
+        log "dependency -> install_xema_prod_channel"
+        install_xema_prod_channel
+    fi
+
+    if [ "$channel" == "dev" ]; then
+        log "dependency -> install_xema_dev_channel"
+        install_xema_dev_channel
+    fi
+
+    add_default_settings
+
+    footer
+}
+
+function backup_existing_installation() {
+    header
+
+    mkdir -p /var/lib/xema/manager
+    cp -r /var/lib/xema/manager /var/lib/xema/manager.$(date '+%Y%m%d.%H')
+    rm -rf /tmp/manager.zip
+    rm -f /tmp/appsettings.json
+    cp -f /var/lib/xema/manager/appsettings.json /tmp/appsettings.json
+
+    footer
+}
+
+# https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip
+function install_xema_prod_channel() {
+    header
+
+    echo "Installing from ${green}$channel${reset} channel ..."
+
     if [ "$distro" == "Ubuntu" ]; then
-        ubuntu_dependencies
-        ubuntu_dotnet
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip -O /tmp/manager.zip
+        unzip -qo /tmp/manager.zip -d /var/lib/xema/manager
     fi
 
     if [ "$distro" == "CentOS" ]; then
-        centos_dependencies
-        centos_dotnet
+        echo "${red}$LINENO: Not implemented${reset}"
     fi
 
     if [ "$distro" == "Unknown" ]; then
@@ -441,40 +497,6 @@ function install_xema_dev_channel() {
     footer
 }
 
-# https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip
-function install_xema_prod_channel() {
-    header
-
-    echo "Installing from ${green}$channel${reset} channel ..."
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip -O /tmp/manager.zip
-        unzip -qo /tmp/manager.zip -d /var/lib/xema/manager
-    fi
-
-    if [ "$distro" == "CentOS" ]; then
-        echo "${red}$LINENO: Not implemented${reset}"
-    fi
-
-    if [ "$distro" == "Unknown" ]; then
-        echo "${red}$LINENO: $distro OS${reset}"
-    fi
-
-    footer
-}
-
-function backup_existing_installation() {
-    header
-
-    mkdir -p /var/lib/xema/manager
-    cp -r /var/lib/xema/manager /var/lib/xema/manager.$(date '+%Y%m%d.%H')
-    rm -rf /tmp/manager.zip
-    rm -f /tmp/appsettings.json
-    cp -f /var/lib/xema/manager/appsettings.json /tmp/appsettings.json
-
-    footer
-}
-
 function add_default_settings() {
     header
 
@@ -485,51 +507,41 @@ function add_default_settings() {
     footer
 }
 
-function install_xema_binary() {
+# variable $configured
+function configure_components() {
     header
+    configured="no"
 
-    backup_existing_installation
+    if [[ $installed == "yes" ]]; then
 
-    if [ "$channel" == "release" ]; then
-        log "dependency -> install_xema_prod_channel"
-        install_xema_prod_channel
+        log "-> configure_firewall"
+        configure_firewall
+
+        log "-> configure_nginx"
+        configure_nginx
+
+        log "-> configure_asterisk"
+        configure_asterisk
+
+        log "-> configure_mysql"
+        configure_mysql
+
+        log "-> configure_logrotate"
+        configure_logrotate
+
+        log "-> configure_prometheus"
+        configure_prometheus
+
+        log "-> configure_xema_service"
+        configure_xema_service
+
+        log "-> configure_admin_access"
+        configure_admin_access
+
+        configured="yes"
     fi
 
-    if [ "$channel" == "dev" ]; then
-        log "dependency -> install_xema_dev_channel"
-        install_xema_dev_channel
-    fi
-
-    add_default_settings
-
-    footer
-}
-
-# variable $installed
-function install_tools_and_binaries() {
-    header
-    installed="no"
-
-    log "dependency -> xema_capable_operating_environment"
-    xema_capable_operating_environment
-
-    if [[ $installable == "yes" ]]; then
-        log "dependency -> install_tools"
-        echo "${green}Installing tools ...${reset}"
-        install_tools
-
-        log "dependency -> install_dependencies"
-        echo "${green}Installing dependencies ...${reset}"
-        install_dependencies
-
-        log "dependency -> install_xema_binary"
-        echo "${green}Installing Xema Manager ...${reset}"
-        install_xema_binary
-
-        installed="yes"
-    fi
-
-    footer installed="$installed"
+    footer configured="$configured"
 }
 
 function configure_firewall() {
@@ -546,29 +558,6 @@ function configure_firewall() {
         systemctl stop firewalld
         systemctl disable firewalld
         systemctl mask --now firewalld
-    fi
-
-    if [ "$distro" == "Unknown" ]; then
-        echo "${red}$LINENO: $distro OS${reset}"
-    fi
-
-    footer
-}
-
-function generate_self_signed_ssl() {
-    header
-
-    if [ "$distro" == "Ubuntu" ]; then
-
-        ls /etc/ssl/private/key.pem
-        if [ "$?" -ne "0" ]; then
-            openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/key.pem -out /etc/ssl/certs/certificate.pem -subj "/CN=xema-manager"
-        fi
-
-    fi
-
-    if [ "$distro" == "CentOS" ]; then
-        echo "${red}$LINENO: Not implemented${reset}"
     fi
 
     if [ "$distro" == "Unknown" ]; then
@@ -609,6 +598,29 @@ function configure_nginx() {
 
         nginx -s reload
 
+    fi
+
+    if [ "$distro" == "Unknown" ]; then
+        echo "${red}$LINENO: $distro OS${reset}"
+    fi
+
+    footer
+}
+
+function generate_self_signed_ssl() {
+    header
+
+    if [ "$distro" == "Ubuntu" ]; then
+
+        ls /etc/ssl/private/key.pem
+        if [ "$?" -ne "0" ]; then
+            openssl req -x509 -nodes -days 3650 -newkey rsa:2048 -keyout /etc/ssl/private/key.pem -out /etc/ssl/certs/certificate.pem -subj "/CN=xema-manager"
+        fi
+
+    fi
+
+    if [ "$distro" == "CentOS" ]; then
+        echo "${red}$LINENO: Not implemented${reset}"
     fi
 
     if [ "$distro" == "Unknown" ]; then
@@ -675,34 +687,30 @@ function configure_logrotate() {
     footer
 }
 
-function configure_xema_service() {
+function configure_prometheus() {
     header
 
-    # if [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "16" ]]; then
-    #     installable=yes
-    #     supported=no
-    # elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "18" ]]; then
-    #     installable=yes
-    #     supported=yes
-    # elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "20" ]]; then
-    #     installable=yes
-    #     supported=no
-    # elif [[ $hostsys == "Linux" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "22" ]]; then
-    #     installable=yes
-    #     supported=no
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/prometheus.yml -O /tmp/prometheus.yml
+        cp /tmp/prometheus.yml /etc/prometheus/prometheus.yml
 
-    # elif [[ $hostsys == "WSL" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "20" ]]; then
-    #     installable=no
-    #     supported=no
-    # elif [[ $hostsys == "WSL" && $kernel == "Linux" && $distro == "Ubuntu" && $oever == "22" ]]; then
-    #     installable=yes
-    #     supported=no
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/target-xema.json -O /tmp/target-xema.json
+        cp /tmp/target-xema.json /etc/prometheus/target-xema.json
+    fi
 
-    # # other
-    # elif [[ $distro == "Unknown" && $oever == "2" ]]; then
-    #     installable=no
-    #     supported=no
-    # fi
+    if [ "$distro" == "CentOS" ]; then
+        echo "${red}$LINENO: Not implemented${reset}"
+    fi
+
+    if [ "$distro" == "Unknown" ]; then
+        echo "${red}$LINENO: $distro OS${reset}"
+    fi
+
+    footer
+}
+
+function configure_xema_service() {
+    header
 
     if [[ $hostsys == "WSL" && $kernel == "Linux" ]]; then
         # wsl
@@ -761,43 +769,74 @@ function configure_admin_access() {
     footer
 }
 
-# variable $configured
+function reload_configurations() {
+    header
+
+    # if [[ $configured == "yes" ]]; then
+
+    # fi
+
+    log "-> reload_nginx"
+    reload_nginx
+
+    log "-> reload_prometheus"
+    reload_prometheus
+
+    footer
+}
+
+function reload_nginx() {
+    header
+
+    if [ "$distro" == "Ubuntu" ]; then
+        nginx -s reload
+    fi
+
+    if [ "$distro" == "CentOS" ]; then
+        nginx -s reload
+    fi
+
+    if [ "$distro" == "Unknown" ]; then
+        echo "${red}$LINENO: $distro OS${reset}"
+    fi
+
+    footer
+}
+
+function reload_prometheus() {
+    header
+
+    if [ "$distro" == "Ubuntu" ]; then
+        systemctl restart prometheus
+    fi
+
+    if [ "$distro" == "CentOS" ]; then
+        echo "${red}$LINENO: $distro OS${reset}"
+    fi
+
+    if [ "$distro" == "Unknown" ]; then
+        echo "${red}$LINENO: $distro OS${reset}"
+    fi
+
+    footer
+}
+
 function install_and_configure_system() {
     header
-    configured="no"
 
     log "dependency -> install_tools_and_binaries"
     install_tools_and_binaries
 
-    if [[ $installed == "yes" ]]; then
+    log "dependency -> configure_components"
+    configure_components
 
-        log "-> configure_firewall"
-        configure_firewall
+    log "dependency -> reload_configurations"
+    reload_configurations
 
-        log "-> configure_nginx"
-        configure_nginx
-
-        log "-> configure_asterisk"
-        configure_asterisk
-
-        log "-> configure_mysql"
-        configure_mysql
-
-        log "-> configure_logrotate"
-        configure_logrotate
-
-        log "-> configure_xema_service"
-        configure_xema_service
-
-        log "-> configure_admin_access"
-        configure_admin_access
-
-        configured="yes"
-    fi
-
-    footer configured="$configured"
+    footer
 }
 
+# variable $started
 function setup_and_start_services() {
     header
     started="no"
@@ -807,8 +846,7 @@ function setup_and_start_services() {
 
     if [[ $configured == "yes" ]]; then
 
-        log "-> service xema-manager start"
-        service xema-manager start
+        # do anything else neededd
 
         started="yes"
     fi
@@ -827,6 +865,7 @@ help() {
     echo
 }
 
+# variable $success
 function bootstrap() {
     header
     success="no"

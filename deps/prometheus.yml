@@ -1,0 +1,10 @@
+global:
+  evaluation_interval: 15s
+
+scrape_configs:
+
+- job_name: "xema"
+  scrape_interval: 15s
+  file_sd_configs:
+    - files:
+        - /etc/prometheus/target-*.json
