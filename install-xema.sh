@@ -937,4 +937,4 @@ fi
 depth=0
 set_colors
 bootstrap
-if [[ $success == "no" ]]; then show_log; fi
+if [[ $success == "no" || $channel == "dev" ]]; then show_log; fi
