@@ -118,6 +118,7 @@ if [ "$ostype" == "Ubuntu" ]; then
       # apt -f install
       # dpkg -l | grep libssl1.1
 
+      echo "skip as of now"
     fi
 
     apt update
