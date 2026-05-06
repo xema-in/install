@@ -390,11 +390,11 @@ function ubuntu_dotnet() {
     if [ "$oever" == "18" ]; then
         wget -q https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O /tmp/packages-microsoft-prod.deb
         dpkg -i /tmp/packages-microsoft-prod.deb
-        add-apt-repository universe
+        add-apt-repository -y universe
     elif [ "$oever" == "20" ]; then
         echo "${red}$LINENO: Not implemented${reset}"
     elif [ "$oever" == "22" ]; then
-        add-apt-repository ppa:dotnet/backports
+        add-apt-repository -y ppa:dotnet/backports
         apt update
         apt $apt_quiet install -y aspnetcore-runtime-10.0
     elif [ "$oever" == "24" ]; then
