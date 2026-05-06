@@ -292,9 +292,9 @@ function install_tools() {
     header
 
     if [ "$distro" == "Ubuntu" ]; then
-        apt -qqq update
-        apt -qqq install -y curl wget unzip at sngrep
-        # apt -qqq install -y git sipsak linphone-cli
+        apt $apt_quiet update
+        apt $apt_quiet install -y curl wget unzip at sngrep
+        # apt $apt_quiet install -y git sipsak linphone-cli
     fi
 
     if [ "$distro" == "CentOS" ]; then
@@ -334,39 +334,39 @@ function ubuntu_dependencies() {
 
     which asterisk >/dev/null
     if [ "$?" -ne "0" ]; then
-        apt -qqq install -y asterisk
+        apt $apt_quiet install -y asterisk
+        systemctl start asterisk
     fi
 
     which nginx >/dev/null
     if [ "$?" -ne "0" ]; then
-        apt -qqq install -y nginx
+        apt $apt_quiet install -y nginx
+        systemctl start nginx
     fi
 
     which rabbitmq-server >/dev/null
     if [ "$?" -ne "0" ]; then
-        apt -qqq install -y rabbitmq-server
+        apt $apt_quiet install -y rabbitmq-server
+        systemctl start rabbitmq-server
     fi
-
-    # which valkey-server >/dev/null
-    # if [ "$?" -ne "0" ]; then
-    #     apt -qqq install -y valkey-server
-    # fi
 
     which redis-server >/dev/null
     if [ "$?" -ne "0" ]; then
-        apt -qqq install -y redis-server
+        apt $apt_quiet install -y redis-server
+        systemctl start redis-server
     fi
 
     which prometheus >/dev/null
     if [ "$?" -ne "0" ]; then
-        apt -qqq install -y prometheus
+        apt $apt_quiet install -y prometheus
+        systemctl start prometheus
     fi
 
     install_mariadb="no"
 
     which mysql >/dev/null
     if [ "$?" -ne "0" ]; then
-        # apt -qqq install -y mariadb-server
+        # apt $apt_quiet install -y mariadb-server
         install_mariadb="yes"
     fi
 
@@ -376,7 +376,8 @@ function ubuntu_dependencies() {
     fi
 
     if [ "$install_mariadb" == "yes" ]; then
-        apt -qqq install -y mariadb-server
+        apt $apt_quiet install -y mariadb-server
+        systemctl start mariadb
     fi
 
     footer
@@ -393,9 +394,11 @@ function ubuntu_dotnet() {
     elif [ "$oever" == "20" ]; then
         echo "${red}$LINENO: Not implemented${reset}"
     elif [ "$oever" == "22" ]; then
-        apt -qqq install -y aspnetcore-runtime-8.0
+        add-apt-repository ppa:dotnet/backports
+        apt update
+        apt $apt_quiet install -y aspnetcore-runtime-10.0
     elif [ "$oever" == "24" ]; then
-        apt -qqq install -y aspnetcore-runtime-8.0
+        apt $apt_quiet install -y aspnetcore-runtime-10.0
     else
         echo "${red}$LINENO: Not implemented${reset}"
     fi
@@ -857,11 +860,12 @@ function setup_and_start_services() {
 help() {
     # Display Help
     echo "Install Xema Platform software."
-    echo "Syntax: ./install-xema.sh [-d|h|m]"
+    echo "Syntax: ./install-xema.sh [-d|h|m|v]"
     echo "options:"
     echo "h     Print this Help."
     echo "d     Install the Dev release."
     echo "m     Display the OS support matrix."
+    echo "v     Increase verbosity (use up to -vvv to remove apt quiet flags)."
     echo
 }
 
@@ -903,7 +907,8 @@ function detect_installed_channel() {
 # finally
 channel="release"
 display_matrix="false"
-while getopts hdm option; do
+verbosity=0
+while getopts hdmv option; do
     case $option in
     h) # display Help
         help
@@ -915,6 +920,9 @@ while getopts hdm option; do
     m) # Display support matrix
         display_matrix="true"
         ;;
+    v) # Increase verbosity
+        verbosity=$((verbosity + 1))
+        ;;
     \?) # Invalid option
         echo "Error: Invalid option"
         echo
@@ -923,6 +931,16 @@ while getopts hdm option; do
         ;;
     esac
 done
+
+# Set apt quiet flags: -qqq by default, one q removed per -v
+_quiet_level=$((3 - verbosity))
+if [ $_quiet_level -lt 0 ]; then _quiet_level=0; fi
+if [ $_quiet_level -eq 0 ]; then
+    apt_quiet=""
+else
+    apt_quiet="-$(printf 'q%.0s' $(seq 1 $_quiet_level))"
+fi
+unset _quiet_level
 
 #detect_installed_channel
 
