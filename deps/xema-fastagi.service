@@ -1,0 +1,14 @@
+[Unit]
+Description=Xema FastAGI service
+  
+[Service]
+ExecStart=/usr/bin/dotnet /var/lib/xema/fastagi/FastAGI.dll
+WorkingDirectory=/var/lib/xema/fastagi
+User=
+Group=
+Restart=on-failure
+SyslogIdentifier=xema-fastagi
+PrivateTmp=true
+  
+[Install]
+WantedBy=multi-user.target

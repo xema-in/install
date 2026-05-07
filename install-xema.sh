@@ -237,6 +237,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing dependencies ...${reset}"
         install_dependencies
 
+        log "-> install_xema_fastagi"
+        echo "${green}Installing Xema FastAGI ...${reset}"
+        install_xema_fastagi
+
         log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
@@ -420,6 +424,20 @@ function centos_dotnet() {
     header
 
     echo "${red}$LINENO: Not implemented${reset}"
+
+    footer
+}
+
+function install_xema_fastagi() {
+    header
+
+    mkdir -p /var/lib/xema/fastagi
+    rm -rf /tmp/fastagi.zip
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/fastagi/FastAGI.zip -O /tmp/fastagi.zip
+        unzip -qo /tmp/fastagi.zip -d /var/lib/xema/fastagi
+    fi
 
     footer
 }
@@ -735,6 +753,15 @@ function configure_xema_service() {
             ln -s /lib/systemd/system/xema-manager.service /etc/systemd/system/multi-user.target.wants/xema-manager.service
             systemctl daemon-reload
             systemctl enable xema-manager.service
+        fi
+
+        ls /etc/systemd/system/multi-user.target.wants/xema-fastagi.service
+        if [ "$?" -ne "0" ]; then
+            wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-fastagi.service -O /tmp/xema-fastagi.service
+            cp /tmp/xema-fastagi.service /lib/systemd/system/xema-fastagi.service
+            ln -s /lib/systemd/system/xema-fastagi.service /etc/systemd/system/multi-user.target.wants/xema-fastagi.service
+            systemctl daemon-reload
+            systemctl enable xema-fastagi.service
         fi
 
     fi
