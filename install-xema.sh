@@ -746,23 +746,25 @@ function configure_xema_service() {
     elif [[ $hostsys == "Linux" && $kernel == "Linux" ]]; then
         # Ubuntu, CentOS
 
+        # systemctl list-dependencies xema-manager.service
+
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-manager.service -O /tmp/xema-manager.service
+        cp /tmp/xema-manager.service /lib/systemd/system/xema-manager.service
         ls /etc/systemd/system/multi-user.target.wants/xema-manager.service
         if [ "$?" -ne "0" ]; then
-            wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-manager.service -O /tmp/xema-manager.service
-            cp /tmp/xema-manager.service /lib/systemd/system/xema-manager.service
             ln -s /lib/systemd/system/xema-manager.service /etc/systemd/system/multi-user.target.wants/xema-manager.service
-            systemctl daemon-reload
-            systemctl enable xema-manager.service
         fi
+        systemctl daemon-reload
+        systemctl enable xema-manager.service
 
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-fastagi.service -O /tmp/xema-fastagi.service
+        cp /tmp/xema-fastagi.service /lib/systemd/system/xema-fastagi.service
         ls /etc/systemd/system/multi-user.target.wants/xema-fastagi.service
         if [ "$?" -ne "0" ]; then
-            wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-fastagi.service -O /tmp/xema-fastagi.service
-            cp /tmp/xema-fastagi.service /lib/systemd/system/xema-fastagi.service
             ln -s /lib/systemd/system/xema-fastagi.service /etc/systemd/system/multi-user.target.wants/xema-fastagi.service
-            systemctl daemon-reload
-            systemctl enable xema-fastagi.service
         fi
+        systemctl daemon-reload
+        systemctl enable xema-fastagi.service
 
     fi
 
