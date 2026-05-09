@@ -1,6 +1,8 @@
 [Unit]
 Description=Xema Manager service
-  
+Requires=xema-fastagi.service
+After=xema-fastagi.service
+
 [Service]
 ExecStart=/usr/bin/dotnet /var/lib/xema/manager/Manager.dll
 WorkingDirectory=/var/lib/xema/manager
@@ -9,6 +11,6 @@ Group=
 Restart=on-failure
 SyslogIdentifier=xema-manager
 PrivateTmp=true
-  
+
 [Install]
 WantedBy=multi-user.target
