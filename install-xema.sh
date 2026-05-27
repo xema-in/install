@@ -793,6 +793,15 @@ function configure_xema_service() {
         systemctl daemon-reload
         systemctl enable xema-astermq.service
 
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-simplecdr.service -O /tmp/xema-simplecdr.service
+        cp /tmp/xema-simplecdr.service /lib/systemd/system/xema-simplecdr.service
+        ls /etc/systemd/system/multi-user.target.wants/xema-simplecdr.service
+        if [ "$?" -ne "0" ]; then
+            ln -s /lib/systemd/system/xema-simplecdr.service /etc/systemd/system/multi-user.target.wants/xema-simplecdr.service
+        fi
+        systemctl daemon-reload
+        systemctl enable xema-simplecdr.service
+
     fi
 
     # if [ "$distro" == "Ubuntu" ]; then

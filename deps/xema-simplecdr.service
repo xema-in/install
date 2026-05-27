@@ -1,0 +1,14 @@
+[Unit]
+Description=Xema SimpleCdr service
+
+[Service]
+ExecStart=/usr/bin/dotnet /var/lib/xema/simplecdr/SimpleCdr.dll
+WorkingDirectory=/var/lib/xema/simplecdr
+User=
+Group=
+Restart=on-failure
+SyslogIdentifier=xema-simplecdr
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
