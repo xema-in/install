@@ -241,6 +241,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema FastAGI ...${reset}"
         install_xema_fastagi
 
+        log "-> install_xema_astermq"
+        echo "${green}Installing Xema AsterMQ ...${reset}"
+        install_xema_astermq
+
         log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
@@ -437,6 +441,20 @@ function install_xema_fastagi() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/fastagi/FastAGI.zip -O /tmp/fastagi.zip
         unzip -qo /tmp/fastagi.zip -d /var/lib/xema/fastagi
+    fi
+
+    footer
+}
+
+function install_xema_astermq() {
+    header
+
+    mkdir -p /var/lib/xema/astermq
+    rm -rf /tmp/astermq.zip
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/astermq/AsterMQ.zip -O /tmp/astermq.zip
+        unzip -qo /tmp/astermq.zip -d /var/lib/xema/astermq
     fi
 
     footer
@@ -765,6 +783,15 @@ function configure_xema_service() {
         fi
         systemctl daemon-reload
         systemctl enable xema-fastagi.service
+
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-astermq.service -O /tmp/xema-astermq.service
+        cp /tmp/xema-astermq.service /lib/systemd/system/xema-astermq.service
+        ls /etc/systemd/system/multi-user.target.wants/xema-astermq.service
+        if [ "$?" -ne "0" ]; then
+            ln -s /lib/systemd/system/xema-astermq.service /etc/systemd/system/multi-user.target.wants/xema-astermq.service
+        fi
+        systemctl daemon-reload
+        systemctl enable xema-astermq.service
 
     fi
 

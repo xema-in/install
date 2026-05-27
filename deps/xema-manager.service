@@ -1,7 +1,7 @@
 [Unit]
 Description=Xema Manager service
-Requires=xema-fastagi.service
-After=xema-fastagi.service
+# Requires=xema-fastagi.service
+# After=xema-fastagi.service
 
 [Service]
 ExecStart=/usr/bin/dotnet /var/lib/xema/manager/Manager.dll
