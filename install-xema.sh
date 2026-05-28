@@ -245,6 +245,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema AsterMQ ...${reset}"
         install_xema_astermq
 
+        log "-> install_xema_simplecdr"
+        echo "${green}Installing Xema SimpleCdr ...${reset}"
+        install_xema_simplecdr
+
         log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
@@ -455,6 +459,20 @@ function install_xema_astermq() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/astermq/AsterMQ.zip -O /tmp/astermq.zip
         unzip -qo /tmp/astermq.zip -d /var/lib/xema/astermq
+    fi
+
+    footer
+}
+
+function install_xema_simplecdr() {
+    header
+
+    mkdir -p /var/lib/xema/simplecdr
+    rm -rf /tmp/simplecdr.zip
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/simplecdr/SimpleCdr.zip -O /tmp/simplecdr.zip
+        unzip -qo /tmp/simplecdr.zip -d /var/lib/xema/simplecdr
     fi
 
     footer
