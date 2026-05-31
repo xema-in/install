@@ -249,6 +249,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema SimpleCdr ...${reset}"
         install_xema_simplecdr
 
+        log "-> install_xema_tracer"
+        echo "${green}Installing Xema Tracer ...${reset}"
+        install_xema_tracer
+
         log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
@@ -473,6 +477,20 @@ function install_xema_simplecdr() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/simplecdr/SimpleCdr.zip -O /tmp/simplecdr.zip
         unzip -qo /tmp/simplecdr.zip -d /var/lib/xema/simplecdr
+    fi
+
+    footer
+}
+
+function install_xema_tracer() {
+    header
+
+    mkdir -p /var/lib/xema/tracer
+    rm -rf /tmp/tracer.zip
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/tracer/Tracer.zip -O /tmp/tracer.zip
+        unzip -qo /tmp/tracer.zip -d /var/lib/xema/tracer
     fi
 
     footer
