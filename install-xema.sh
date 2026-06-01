@@ -253,6 +253,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema Tracer ...${reset}"
         install_xema_tracer
 
+        log "-> install_xema_missingcdrs"
+        echo "${green}Installing Xema MissingCdrs ...${reset}"
+        install_xema_missingcdrs
+
         log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
@@ -446,8 +450,14 @@ function install_xema_fastagi() {
     mkdir -p /var/lib/xema/fastagi
     rm -rf /tmp/fastagi.zip
 
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
     if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/fastagi/FastAGI.zip -O /tmp/fastagi.zip
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/FastAGI.zip -O /tmp/fastagi.zip
         unzip -qo /tmp/fastagi.zip -d /var/lib/xema/fastagi
     fi
 
@@ -460,8 +470,14 @@ function install_xema_astermq() {
     mkdir -p /var/lib/xema/astermq
     rm -rf /tmp/astermq.zip
 
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
     if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/astermq/AsterMQ.zip -O /tmp/astermq.zip
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/AsterMQ.zip -O /tmp/astermq.zip
         unzip -qo /tmp/astermq.zip -d /var/lib/xema/astermq
     fi
 
@@ -474,8 +490,14 @@ function install_xema_simplecdr() {
     mkdir -p /var/lib/xema/simplecdr
     rm -rf /tmp/simplecdr.zip
 
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
     if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/simplecdr/SimpleCdr.zip -O /tmp/simplecdr.zip
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/SimpleCdr.zip -O /tmp/simplecdr.zip
         unzip -qo /tmp/simplecdr.zip -d /var/lib/xema/simplecdr
     fi
 
@@ -488,9 +510,35 @@ function install_xema_tracer() {
     mkdir -p /var/lib/xema/tracer
     rm -rf /tmp/tracer.zip
 
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
     if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/tracer/Tracer.zip -O /tmp/tracer.zip
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Tracer.zip -O /tmp/tracer.zip
         unzip -qo /tmp/tracer.zip -d /var/lib/xema/tracer
+    fi
+
+    footer
+}
+
+function install_xema_missingcdrs() {
+    header
+
+    mkdir -p /var/lib/xema/import
+    rm -rf /tmp/missingcdrs.zip
+
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/MissingCdrs.zip -O /tmp/missingcdrs.zip
+        unzip -qo /tmp/missingcdrs.zip -d /var/lib/xema/import
     fi
 
     footer
