@@ -249,6 +249,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema SimpleCdr ...${reset}"
         install_xema_simplecdr
 
+        log "-> install_xema_bff"
+        echo "${green}Installing Xema BFF ...${reset}"
+        install_xema_bff
+
         log "-> install_xema_tracer"
         echo "${green}Installing Xema Tracer ...${reset}"
         install_xema_tracer
@@ -499,6 +503,26 @@ function install_xema_simplecdr() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/SimpleCdr.zip -O /tmp/simplecdr.zip
         unzip -qo /tmp/simplecdr.zip -d /var/lib/xema/simplecdr
+    fi
+
+    footer
+}
+
+function install_xema_bff() {
+    header
+
+    mkdir -p /var/lib/xema/bff
+    rm -rf /tmp/bff.zip
+
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Bff.zip -O /tmp/bff.zip
+        unzip -qo /tmp/bff.zip -d /var/lib/xema/bff
     fi
 
     footer
@@ -885,6 +909,15 @@ function configure_xema_service() {
         fi
         systemctl daemon-reload
         systemctl enable xema-simplecdr.service
+
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-bff.service -O /tmp/xema-bff.service
+        cp /tmp/xema-bff.service /lib/systemd/system/xema-bff.service
+        ls /etc/systemd/system/multi-user.target.wants/xema-bff.service
+        if [ "$?" -ne "0" ]; then
+            ln -s /lib/systemd/system/xema-bff.service /etc/systemd/system/multi-user.target.wants/xema-bff.service
+        fi
+        systemctl daemon-reload
+        systemctl enable xema-bff.service
 
     fi
 

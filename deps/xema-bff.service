@@ -1,0 +1,15 @@
+[Unit]
+Description=Xema BFF service
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/dotnet /var/lib/xema/bff/Bff.dll
+WorkingDirectory=/var/lib/xema/bff
+User=
+Group=
+Restart=on-failure
+SyslogIdentifier=xema-bff
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
