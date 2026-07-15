@@ -261,6 +261,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema MissingCdrs ...${reset}"
         install_xema_missingcdrs
 
+        log "-> install_xema_ava"
+        echo "${green}Installing Xema Ava ...${reset}"
+        install_xema_ava
+
         log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
@@ -563,6 +567,26 @@ function install_xema_missingcdrs() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/MissingCdrs.zip -O /tmp/missingcdrs.zip
         unzip -qo /tmp/missingcdrs.zip -d /var/lib/xema/import
+    fi
+
+    footer
+}
+
+function install_xema_ava() {
+    header
+
+    mkdir -p /var/lib/xema/ava
+    rm -rf /tmp/ava.zip
+
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Ava.zip -O /tmp/ava.zip
+        unzip -qo /tmp/ava.zip -d /var/lib/xema/ava
     fi
 
     footer
@@ -918,6 +942,15 @@ function configure_xema_service() {
         fi
         systemctl daemon-reload
         systemctl enable xema-bff.service
+
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-ava.service -O /tmp/xema-ava.service
+        cp /tmp/xema-ava.service /lib/systemd/system/xema-ava.service
+        ls /etc/systemd/system/multi-user.target.wants/xema-ava.service
+        if [ "$?" -ne "0" ]; then
+            ln -s /lib/systemd/system/xema-ava.service /etc/systemd/system/multi-user.target.wants/xema-ava.service
+        fi
+        systemctl daemon-reload
+        systemctl enable xema-ava.service
 
     fi
 

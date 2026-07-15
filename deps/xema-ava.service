@@ -1,0 +1,16 @@
+[Unit]
+Description=Xema Ava AI Agent service
+After=network-online.target asterisk.service
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/dotnet /var/lib/xema/ava/Ava.dll
+WorkingDirectory=/var/lib/xema/ava
+User=
+Group=
+Restart=on-failure
+SyslogIdentifier=xema-ava
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
