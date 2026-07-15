@@ -257,6 +257,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema Tracer ...${reset}"
         install_xema_tracer
 
+        log "-> install_xema_sipper"
+        echo "${green}Installing Xema Sipper ...${reset}"
+        install_xema_sipper
+
         log "-> install_xema_missingcdrs"
         echo "${green}Installing Xema MissingCdrs ...${reset}"
         install_xema_missingcdrs
@@ -321,7 +325,7 @@ function install_tools() {
 
     if [ "$distro" == "Ubuntu" ]; then
         apt $apt_quiet update
-        apt $apt_quiet install -y curl wget unzip at sngrep
+        apt $apt_quiet install -y curl wget unzip at sngrep libpcap0.8
         # apt $apt_quiet install -y git sipsak linphone-cli
     fi
 
@@ -547,6 +551,26 @@ function install_xema_tracer() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Tracer.zip -O /tmp/tracer.zip
         unzip -qo /tmp/tracer.zip -d /var/lib/xema/tracer
+    fi
+
+    footer
+}
+
+function install_xema_sipper() {
+    header
+
+    mkdir -p /var/lib/xema/sipper
+    rm -rf /tmp/sipper.zip
+
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Sipper.zip -O /tmp/sipper.zip
+        unzip -qo /tmp/sipper.zip -d /var/lib/xema/sipper
     fi
 
     footer
@@ -951,6 +975,15 @@ function configure_xema_service() {
         fi
         systemctl daemon-reload
         systemctl enable xema-ava.service
+
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-sipper.service -O /tmp/xema-sipper.service
+        cp /tmp/xema-sipper.service /lib/systemd/system/xema-sipper.service
+        ls /etc/systemd/system/multi-user.target.wants/xema-sipper.service
+        if [ "$?" -ne "0" ]; then
+            ln -s /lib/systemd/system/xema-sipper.service /etc/systemd/system/multi-user.target.wants/xema-sipper.service
+        fi
+        systemctl daemon-reload
+        systemctl enable xema-sipper.service
 
     fi
 
