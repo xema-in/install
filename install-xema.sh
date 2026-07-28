@@ -276,6 +276,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema Metrics ...${reset}"
         install_xema_metrics
 
+        log "-> install_xema_cli"
+        echo "${green}Installing Xema CLI ...${reset}"
+        install_xema_cli
+
         log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
@@ -638,6 +642,26 @@ function install_xema_metrics() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Metrics.zip -O /tmp/metrics.zip
         unzip -qo /tmp/metrics.zip -d /var/lib/xema/metrics
+    fi
+
+    footer
+}
+
+function install_xema_cli() {
+    header
+
+    rm -rf /tmp/cli.zip
+
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Cli.zip -O /tmp/cli.zip
+        unzip -qo /tmp/cli.zip -d /usr/local/bin
+        chmod +x /usr/local/bin/xema
     fi
 
     footer
