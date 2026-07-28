@@ -17,6 +17,7 @@ function define_support_matrix() {
         "Ubuntu|Linux|Linux|25|yes|no"
         "CentOS|Linux|Linux|4|no|no"
         "Ubuntu|WSL|Linux|25|yes|no"
+        "Ubuntu|Linux|Linux|26|yes|yes"
     )
 }
 
