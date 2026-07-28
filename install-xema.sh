@@ -662,6 +662,7 @@ function install_xema_cli() {
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Cli.zip -O /tmp/cli.zip
         unzip -qo /tmp/cli.zip -d /usr/local/bin
         chmod +x /usr/local/bin/xema
+        /usr/local/bin/xema completion bash > /etc/bash_completion.d/xema
     fi
 
     footer
