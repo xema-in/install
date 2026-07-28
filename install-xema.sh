@@ -272,6 +272,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema Ava ...${reset}"
         install_xema_ava
 
+        log "-> install_xema_metrics"
+        echo "${green}Installing Xema Metrics ...${reset}"
+        install_xema_metrics
+
         log "-> install_xema_binary"
         echo "${green}Installing Xema Manager ...${reset}"
         install_xema_binary
@@ -614,6 +618,26 @@ function install_xema_ava() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Ava.zip -O /tmp/ava.zip
         unzip -qo /tmp/ava.zip -d /var/lib/xema/ava
+    fi
+
+    footer
+}
+
+function install_xema_metrics() {
+    header
+
+    mkdir -p /var/lib/xema/metrics
+    rm -rf /tmp/metrics.zip
+
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Metrics.zip -O /tmp/metrics.zip
+        unzip -qo /tmp/metrics.zip -d /var/lib/xema/metrics
     fi
 
     footer
@@ -987,6 +1011,15 @@ function configure_xema_service() {
         fi
         systemctl daemon-reload
         systemctl enable xema-sipper.service
+
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-metrics.service -O /tmp/xema-metrics.service
+        cp /tmp/xema-metrics.service /lib/systemd/system/xema-metrics.service
+        ls /etc/systemd/system/multi-user.target.wants/xema-metrics.service
+        if [ "$?" -ne "0" ]; then
+            ln -s /lib/systemd/system/xema-metrics.service /etc/systemd/system/multi-user.target.wants/xema-metrics.service
+        fi
+        systemctl daemon-reload
+        systemctl enable xema-metrics.service
 
     fi
 
