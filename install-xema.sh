@@ -432,7 +432,7 @@ function ubuntu_dotnet() {
         add-apt-repository -y ppa:dotnet/backports
         apt update
         apt $apt_quiet install -y aspnetcore-runtime-10.0
-    elif [ "$oever" == "24" ]; then
+    elif [ "$oever" == "24" ] || [ "$oever" == "25" ] || [ "$oever" == "26" ]; then
         apt $apt_quiet install -y aspnetcore-runtime-10.0
     else
         echo "${red}$LINENO: Not implemented${reset}"
