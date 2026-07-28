@@ -1,0 +1,16 @@
+[Unit]
+Description=Xema Metrics service (live dashboard hub)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/usr/bin/dotnet /var/lib/xema/metrics/Metrics.dll
+WorkingDirectory=/var/lib/xema/metrics
+User=
+Group=
+Restart=on-failure
+SyslogIdentifier=xema-metrics
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

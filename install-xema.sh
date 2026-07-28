@@ -15,9 +15,9 @@ function define_support_matrix() {
         "Ubuntu|Linux|Linux|22|yes|yes"
         "Ubuntu|Linux|Linux|24|yes|no"
         "Ubuntu|Linux|Linux|25|yes|no"
+        "Ubuntu|Linux|Linux|26|yes|no"
         "CentOS|Linux|Linux|4|no|no"
         "Ubuntu|WSL|Linux|25|yes|no"
-        "Ubuntu|Linux|Linux|26|yes|yes"
     )
 }
 
@@ -104,6 +104,8 @@ function detect_ubuntu_version() {
     20.*) oever="20" ;;
     22.*) oever="22" ;;
     24.*) oever="24" ;;
+    25.*) oever="25" ;;
+    26.*) oever="26" ;;
     # 24.*) oever="24" ;;
     *) oever="Unknown" ;;
     esac
