@@ -104,6 +104,7 @@ function detect_ubuntu_version() {
     20.*) oever="20" ;;
     22.*) oever="22" ;;
     24.*) oever="24" ;;
+    26.*) oever="26" ;;
     # 24.*) oever="24" ;;
     *) oever="Unknown" ;;
     esac
