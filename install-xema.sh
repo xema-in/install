@@ -443,8 +443,10 @@ function ubuntu_dotnet() {
     elif [ "$oever" == "22" ]; then
         add-apt-repository -y ppa:dotnet/backports
         apt update
+        apt $apt_quiet install -y dotnet-runtime-10.0
         apt $apt_quiet install -y aspnetcore-runtime-10.0
     elif [ "$oever" == "24" ] || [ "$oever" == "25" ] || [ "$oever" == "26" ]; then
+        apt $apt_quiet install -y dotnet-runtime-10.0
         apt $apt_quiet install -y aspnetcore-runtime-10.0
     else
         echo "${red}$LINENO: Not implemented${reset}"
@@ -923,6 +925,19 @@ function configure_mysql() {
     header
 
     mysql -u root -e "CREATE USER IF NOT EXISTS 'xema'@'localhost' IDENTIFIED BY 'xema';GRANT ALL PRIVILEGES ON *.* TO 'xema'@'localhost';FLUSH PRIVILEGES;"
+
+    # migrate Xema tables from Compact to Dynamic row format
+    compact_tables=$(mysql -u root -N -B -e "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='Xema' AND ROW_FORMAT='Compact' AND ENGINE='InnoDB';" 2>/dev/null)
+
+    log "compact_tables=$compact_tables"
+
+    if [ -n "$compact_tables" ] && [ "$compact_tables" -gt "0" ]; then
+        echo "${green}Converting $compact_tables Xema tables to DYNAMIC row format ...${reset}"
+
+        mysql -u root -N -B -e "SELECT CONCAT('ALTER TABLE \`Xema\`.\`', TABLE_NAME, '\` ROW_FORMAT=DYNAMIC;')
+            FROM information_schema.TABLES
+            WHERE TABLE_SCHEMA='Xema' AND ROW_FORMAT='Compact' AND ENGINE='InnoDB';" | mysql -u root Xema
+    fi
 
     # if [ "$distro" == "Ubuntu" ]; then
     #     echo "${red}$LINENO: Not implemented${reset}"
