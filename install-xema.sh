@@ -276,6 +276,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema Metrics ...${reset}"
         install_xema_metrics
 
+        log "-> install_xema_metricsbackfill"
+        echo "${green}Installing Xema Metrics Backfill ...${reset}"
+        install_xema_metricsbackfill
+
         log "-> install_xema_cli"
         echo "${green}Installing Xema CLI ...${reset}"
         install_xema_cli
@@ -642,6 +646,26 @@ function install_xema_metrics() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Metrics.zip -O /tmp/metrics.zip
         unzip -qo /tmp/metrics.zip -d /var/lib/xema/metrics
+    fi
+
+    footer
+}
+
+function install_xema_metricsbackfill() {
+    header
+
+    mkdir -p /var/lib/xema/backfill
+    rm -rf /tmp/metricsbackfill.zip
+
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/MetricsBackfill.zip -O /tmp/metricsbackfill.zip
+        unzip -qo /tmp/metricsbackfill.zip -d /var/lib/xema/backfill
     fi
 
     footer
