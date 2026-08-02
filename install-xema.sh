@@ -240,10 +240,6 @@ function install_tools_and_binaries() {
         echo "${green}Installing dependencies ...${reset}"
         install_dependencies
 
-        log "-> install_kamailio_realms"
-        echo "${green}Installing SIP realm support ...${reset}"
-        install_kamailio_realms
-
         log "-> install_xema_fastagi"
         echo "${green}Installing Xema FastAGI ...${reset}"
         install_xema_fastagi
@@ -413,15 +409,6 @@ function ubuntu_dependencies() {
         systemctl start prometheus
     fi
 
-    # One SIP proxy per carrier realm. The packaged service is not used and is left disabled:
-    # realms each get their own instance of kamailio-realm@.service instead, started inside
-    # that realm's routing table. See install_kamailio_realms.
-    which kamailio >/dev/null
-    if [ "$?" -ne "0" ]; then
-        apt $apt_quiet install -y kamailio
-        systemctl disable --now kamailio >/dev/null 2>&1
-    fi
-
     install_mariadb="no"
 
     which mysql >/dev/null
@@ -487,7 +474,12 @@ function centos_dotnet() {
 }
 
 # SIP realms: the routing rule order they depend on, and the templated unit that runs one
-# proxy per carrier. Both are inert until a realm is actually created.
+# proxy per carrier.
+#
+# NOT WIRED UP. Nothing calls this yet and the kamailio package is not installed by default.
+# The isolation model is still being decided -- if realms end up in network namespaces rather
+# than VRFs, xema-vrf-rules is not needed at all, and the unit's ExecStart changes with it.
+# Kept here so the work is not lost; add the call to install_tools_and_binaries when settled.
 function install_kamailio_realms() {
     header
 
