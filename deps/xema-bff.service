@@ -3,6 +3,9 @@ Description=Xema BFF service
 After=network.target
 
 [Service]
+# Readiness is signalled by the app itself (AddSystemd).
+Type=notify
+TimeoutStartSec=120
 ExecStart=/usr/bin/dotnet /var/lib/xema/bff/Bff.dll
 WorkingDirectory=/var/lib/xema/bff
 User=

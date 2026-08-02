@@ -2,6 +2,9 @@
 Description=Xema SimpleCdr service
 
 [Service]
+# Readiness is signalled by the app itself (AddSystemd).
+Type=notify
+TimeoutStartSec=120
 ExecStart=/usr/bin/dotnet /var/lib/xema/simplecdr/SimpleCdr.dll
 WorkingDirectory=/var/lib/xema/simplecdr
 User=

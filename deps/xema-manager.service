@@ -4,6 +4,9 @@ Description=Xema Manager service
 # After=xema-fastagi.service
 
 [Service]
+# Readiness is signalled by the app itself (AddSystemd).
+Type=notify
+TimeoutStartSec=300
 ExecStart=/usr/bin/dotnet /var/lib/xema/manager/Manager.dll
 WorkingDirectory=/var/lib/xema/manager
 User=

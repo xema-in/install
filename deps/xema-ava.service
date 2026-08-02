@@ -4,6 +4,9 @@ After=network-online.target asterisk.service
 Wants=network-online.target
 
 [Service]
+# Readiness is signalled by the app itself (AddSystemd).
+Type=notify
+TimeoutStartSec=120
 ExecStart=/usr/bin/dotnet /var/lib/xema/ava/Ava.dll
 WorkingDirectory=/var/lib/xema/ava
 User=
