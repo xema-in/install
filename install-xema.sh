@@ -240,6 +240,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing dependencies ...${reset}"
         install_dependencies
 
+        log "-> install_kamailio_realms"
+        echo "${green}Installing SIP realm support ...${reset}"
+        install_kamailio_realms
+
         log "-> install_xema_fastagi"
         echo "${green}Installing Xema FastAGI ...${reset}"
         install_xema_fastagi
@@ -409,6 +413,15 @@ function ubuntu_dependencies() {
         systemctl start prometheus
     fi
 
+    # One SIP proxy per carrier realm. The packaged service is not used and is left disabled:
+    # realms each get their own instance of kamailio-realm@.service instead, started inside
+    # that realm's routing table. See install_kamailio_realms.
+    which kamailio >/dev/null
+    if [ "$?" -ne "0" ]; then
+        apt $apt_quiet install -y kamailio
+        systemctl disable --now kamailio >/dev/null 2>&1
+    fi
+
     install_mariadb="no"
 
     which mysql >/dev/null
@@ -469,6 +482,35 @@ function centos_dotnet() {
     header
 
     echo "${red}$LINENO: Not implemented${reset}"
+
+    footer
+}
+
+# SIP realms: the routing rule order they depend on, and the templated unit that runs one
+# proxy per carrier. Both are inert until a realm is actually created.
+function install_kamailio_realms() {
+    header
+
+    if [ "$distro" == "Ubuntu" ]; then
+        mkdir -p /etc/kamailio/realms
+        mkdir -p /usr/local/lib/xema
+
+        # Without this a realm comes up looking healthy and is still unreachable from the phone
+        # system, with nothing logged anywhere. The script explains why at length.
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-vrf-rules.sh -O /tmp/xema-vrf-rules.sh
+        cp /tmp/xema-vrf-rules.sh /usr/local/lib/xema/xema-vrf-rules.sh
+        chmod 755 /usr/local/lib/xema/xema-vrf-rules.sh
+
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-vrf-rules.service -O /tmp/xema-vrf-rules.service
+        cp /tmp/xema-vrf-rules.service /lib/systemd/system/xema-vrf-rules.service
+
+        # A template, so it is never started on its own — only as kamailio-realm@<realm>.
+        wget -q "https://raw.githubusercontent.com/xema-in/install/master/deps/kamailio-realm@.service" -O "/tmp/kamailio-realm@.service"
+        cp "/tmp/kamailio-realm@.service" "/lib/systemd/system/kamailio-realm@.service"
+
+        systemctl daemon-reload
+        systemctl enable --now xema-vrf-rules.service
+    fi
 
     footer
 }
