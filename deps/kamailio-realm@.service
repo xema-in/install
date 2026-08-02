@@ -5,14 +5,17 @@
 # listen on 5060 at the same time, alongside the phone system doing the same on the server
 # itself — each namespace has its own set of ports.
 #
-# The namespace is built by the Manager, not by this unit, because it holds the carrier's
-# interface and addressing. If it is missing the proxy has nothing to bind and will not start,
-# which is the correct outcome: the realm is what is broken, not the proxy.
+# Deliberately has no [Install] section and is never enabled. The Manager starts and stops these
+# as realms are created and removed, and rebuilds them at boot, because the namespace this binds
+# to does not exist until the Manager has built it. Enabled, systemd would race the Manager at
+# every boot and fail until it caught up.
+#
+# It is also deliberately not ordered after xema-manager.service. The Manager starts this from
+# inside its own startup, so ordering it after the Manager makes the start job queue behind a
+# unit that is still activating — the job then times out, and is cancelled outright if the
+# Manager is restarted while it waits.
 Description=SIP proxy for the %i carrier realm
 Documentation=https://xema.local/help/network-realm
-
-After=network-online.target xema-manager.service
-Wants=network-online.target
 
 [Service]
 Type=forking
@@ -30,6 +33,3 @@ ExecStart=/usr/sbin/kamailio \
 
 Restart=on-failure
 RestartSec=5s
-
-[Install]
-WantedBy=multi-user.target
