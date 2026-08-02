@@ -473,35 +473,22 @@ function centos_dotnet() {
     footer
 }
 
-# SIP realms: the routing rule order they depend on, and the templated unit that runs one
-# proxy per carrier.
+# SIP realms: the templated unit that runs one SIP proxy per carrier, each inside that
+# carrier's own network namespace.
 #
 # NOT WIRED UP. Nothing calls this yet and the kamailio package is not installed by default.
-# The isolation model is still being decided -- if realms end up in network namespaces rather
-# than VRFs, xema-vrf-rules is not needed at all, and the unit's ExecStart changes with it.
-# Kept here so the work is not lost; add the call to install_tools_and_binaries when settled.
+# Add the call to install_tools_and_binaries once realms are ready to ship.
 function install_kamailio_realms() {
     header
 
     if [ "$distro" == "Ubuntu" ]; then
         mkdir -p /etc/kamailio/realms
-        mkdir -p /usr/local/lib/xema
 
-        # Without this a realm comes up looking healthy and is still unreachable from the phone
-        # system, with nothing logged anywhere. The script explains why at length.
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-vrf-rules.sh -O /tmp/xema-vrf-rules.sh
-        cp /tmp/xema-vrf-rules.sh /usr/local/lib/xema/xema-vrf-rules.sh
-        chmod 755 /usr/local/lib/xema/xema-vrf-rules.sh
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-vrf-rules.service -O /tmp/xema-vrf-rules.service
-        cp /tmp/xema-vrf-rules.service /lib/systemd/system/xema-vrf-rules.service
-
-        # A template, so it is never started on its own — only as kamailio-realm@<realm>.
+        # A template, so it is never started on its own -- only as kamailio-realm@<realm>.
         wget -q "https://raw.githubusercontent.com/xema-in/install/master/deps/kamailio-realm@.service" -O "/tmp/kamailio-realm@.service"
         cp "/tmp/kamailio-realm@.service" "/lib/systemd/system/kamailio-realm@.service"
 
         systemctl daemon-reload
-        systemctl enable --now xema-vrf-rules.service
     fi
 
     footer

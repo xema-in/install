@@ -1,28 +1,28 @@
 [Unit]
 # One SIP proxy per carrier realm, instantiated as kamailio-realm@<realm>.service.
 #
-# The proxy runs inside the realm's own routing table so that it can talk to a carrier using
-# addresses another carrier is also using. `ip vrf exec` is what puts it there; everything the
-# proxy opens afterwards inherits that, including the sockets it listens on.
+# The proxy runs inside the realm's own network namespace. That is what lets every realm's proxy
+# listen on 5060 at the same time, alongside the phone system doing the same on the server
+# itself — each namespace has its own set of ports.
+#
+# The namespace is built by the Manager, not by this unit, because it holds the carrier's
+# interface and addressing. If it is missing the proxy has nothing to bind and will not start,
+# which is the correct outcome: the realm is what is broken, not the proxy.
 Description=SIP proxy for the %i carrier realm
 Documentation=https://xema.local/help/network-realm
 
-After=network-online.target
+After=network-online.target xema-manager.service
 Wants=network-online.target
-
-# The realm's routing table has to exist before anything can bind inside it, and the proxy
-# should go away with it rather than sit there bound to nothing.
-BindsTo=sys-subsystem-net-devices-vrf\x2d%i.device
-After=sys-subsystem-net-devices-vrf\x2d%i.device
 
 [Service]
 Type=forking
+NetworkNamespacePath=/var/run/netns/realm-%i
+
 PIDFile=/run/kamailio-realm/%i.pid
 RuntimeDirectory=kamailio-realm
 RuntimeDirectoryPreserve=yes
 
-ExecStartPre=/usr/sbin/kamailio -c -f /etc/kamailio/realms/%i.cfg
-ExecStart=/usr/sbin/ip vrf exec vrf-%i /usr/sbin/kamailio \
+ExecStart=/usr/sbin/kamailio \
     -f /etc/kamailio/realms/%i.cfg \
     -P /run/kamailio-realm/%i.pid \
     -m 64 -M 8 \
