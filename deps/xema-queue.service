@@ -1,0 +1,19 @@
+[Unit]
+Description=Xema Queue service
+After=network-online.target asterisk.service rabbitmq-server.service
+Wants=network-online.target
+
+[Service]
+# Readiness is signalled by the app itself (AddSystemd).
+Type=notify
+TimeoutStartSec=120
+ExecStart=/usr/bin/dotnet /var/lib/xema/queue/Queue.dll
+WorkingDirectory=/var/lib/xema/queue
+User=
+Group=
+Restart=on-failure
+SyslogIdentifier=xema-queue
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

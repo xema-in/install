@@ -256,6 +256,10 @@ function install_tools_and_binaries() {
         echo "${green}Installing Xema BFF ...${reset}"
         install_xema_bff
 
+        log "-> install_xema_queue"
+        echo "${green}Installing Xema Queue ...${reset}"
+        install_xema_queue
+
         log "-> install_xema_tracer"
         echo "${green}Installing Xema Tracer ...${reset}"
         install_xema_tracer
@@ -569,6 +573,26 @@ function install_xema_bff() {
     if [ "$distro" == "Ubuntu" ]; then
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Bff.zip -O /tmp/bff.zip
         unzip -qo /tmp/bff.zip -d /var/lib/xema/bff
+    fi
+
+    footer
+}
+
+function install_xema_queue() {
+    header
+
+    mkdir -p /var/lib/xema/queue
+    rm -rf /tmp/queue.zip
+
+    if [ "$channel" == "dev" ]; then
+        release_tag="dev"
+    else
+        release_tag="v2.0"
+    fi
+
+    if [ "$distro" == "Ubuntu" ]; then
+        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Queue.zip -O /tmp/queue.zip
+        unzip -qo /tmp/queue.zip -d /var/lib/xema/queue
     fi
 
     footer
@@ -1105,6 +1129,15 @@ function configure_xema_service() {
         fi
         systemctl daemon-reload
         systemctl enable xema-metrics.service
+
+        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-queue.service -O /tmp/xema-queue.service
+        cp /tmp/xema-queue.service /lib/systemd/system/xema-queue.service
+        ls /etc/systemd/system/multi-user.target.wants/xema-queue.service
+        if [ "$?" -ne "0" ]; then
+            ln -s /lib/systemd/system/xema-queue.service /etc/systemd/system/multi-user.target.wants/xema-queue.service
+        fi
+        systemctl daemon-reload
+        systemctl enable xema-queue.service
 
     fi
 
