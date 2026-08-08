@@ -4,11 +4,10 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-# Readiness is signalled by the app itself (AddSystemd).
 Type=notify
 TimeoutStartSec=120
-ExecStart=/usr/bin/dotnet /var/lib/xema/sipper/Sipper.dll
-WorkingDirectory=/var/lib/xema/sipper
+ExecStart=/usr/bin/dotnet /opt/techsudoku/xema/sipper/Sipper.dll
+WorkingDirectory=/opt/techsudoku/xema/sipper
 User=
 Group=
 Restart=on-failure
@@ -17,6 +16,11 @@ PrivateTmp=true
 # Raw packet capture needs CAP_NET_RAW (and CAP_NET_ADMIN for promiscuous mode).
 # Effective as root already; these also cover running under a non-root User=.
 AmbientCapabilities=CAP_NET_RAW CAP_NET_ADMIN
+
+ConfigurationDirectory=xema
+StateDirectory=xema/sipper
+Environment=XEMA_CONFIG_DIR=/etc/xema
+Environment=XEMA_SERVICE=sipper
 
 [Install]
 WantedBy=multi-user.target

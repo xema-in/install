@@ -2,16 +2,20 @@
 Description=Xema FastAGI service
   
 [Service]
-# Readiness is signalled by the app itself (AddSystemd).
 Type=notify
 TimeoutStartSec=120
-ExecStart=/usr/bin/dotnet /var/lib/xema/fastagi/FastAGI.dll
-WorkingDirectory=/var/lib/xema/fastagi
+ExecStart=/usr/bin/dotnet /opt/techsudoku/xema/fastagi/FastAGI.dll
+WorkingDirectory=/opt/techsudoku/xema/fastagi
 User=
 Group=
 Restart=on-failure
 SyslogIdentifier=xema-fastagi
 PrivateTmp=true
   
+ConfigurationDirectory=xema
+StateDirectory=xema/fastagi
+Environment=XEMA_CONFIG_DIR=/etc/xema
+Environment=XEMA_SERVICE=fastagi
+
 [Install]
 WantedBy=multi-user.target

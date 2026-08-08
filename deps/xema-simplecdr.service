@@ -2,16 +2,20 @@
 Description=Xema SimpleCdr service
 
 [Service]
-# Readiness is signalled by the app itself (AddSystemd).
 Type=notify
 TimeoutStartSec=120
-ExecStart=/usr/bin/dotnet /var/lib/xema/simplecdr/SimpleCdr.dll
-WorkingDirectory=/var/lib/xema/simplecdr
+ExecStart=/usr/bin/dotnet /opt/techsudoku/xema/simplecdr/SimpleCdr.dll
+WorkingDirectory=/opt/techsudoku/xema/simplecdr
 User=
 Group=
 Restart=on-failure
 SyslogIdentifier=xema-simplecdr
 PrivateTmp=true
+
+ConfigurationDirectory=xema
+StateDirectory=xema/simplecdr
+Environment=XEMA_CONFIG_DIR=/etc/xema
+Environment=XEMA_SERVICE=simplecdr
 
 [Install]
 WantedBy=multi-user.target

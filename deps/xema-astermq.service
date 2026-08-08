@@ -2,16 +2,20 @@
 Description=Xema AsterMQ service
 
 [Service]
-# Readiness is signalled by the app itself (AddSystemd).
 Type=notify
 TimeoutStartSec=120
-ExecStart=/usr/bin/dotnet /var/lib/xema/astermq/AsterMQ.dll
-WorkingDirectory=/var/lib/xema/astermq
+ExecStart=/usr/bin/dotnet /opt/techsudoku/xema/astermq/AsterMQ.dll
+WorkingDirectory=/opt/techsudoku/xema/astermq
 User=
 Group=
 Restart=on-failure
 SyslogIdentifier=xema-astermq
 PrivateTmp=true
+
+ConfigurationDirectory=xema
+StateDirectory=xema/astermq
+Environment=XEMA_CONFIG_DIR=/etc/xema
+Environment=XEMA_SERVICE=astermq
 
 [Install]
 WantedBy=multi-user.target

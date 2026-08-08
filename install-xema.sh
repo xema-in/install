@@ -6,6 +6,20 @@
 # https://www.redhat.com/sysadmin/arguments-options-bash-scripts
 
 
+# Where things live on a server.
+#
+# Program code, configuration and state have three different lifetimes: code is replaced
+# wholesale on upgrade, configuration is edited by the administrator, state is written by the
+# service. Keeping them apart is what stops an upgrade destroying settings, and lets a service
+# run without write access to its own binaries. FHS puts vendor code under /opt, configuration
+# under /etc and state under /var/lib.
+XEMA_INSTALL_DIR="/opt/techsudoku/xema"
+XEMA_CONFIG_DIR="/etc/xema"
+XEMA_STATE_DIR="/var/lib/xema"
+
+# The layout before this change: everything, including configuration, in one directory.
+XEMA_LEGACY_DIR="/var/lib/xema"
+
 # Define the support matrix in a central place
 function define_support_matrix() {
     # Define arrays for each configuration
@@ -239,6 +253,10 @@ function install_tools_and_binaries() {
         log "-> install_dependencies"
         echo "${green}Installing dependencies ...${reset}"
         install_dependencies
+
+        log "-> migrate_xema_layout"
+        echo "${green}Checking filesystem layout ...${reset}"
+        migrate_xema_layout
 
         log "-> install_xema_fastagi"
         echo "${green}Installing Xema FastAGI ...${reset}"
@@ -498,223 +516,107 @@ function install_kamailio_realms() {
     footer
 }
 
+function xema_release_tag() {
+    if [ "$channel" == "dev" ]; then
+        echo "dev"
+    else
+        echo "v2.0"
+    fi
+}
+
+# Fetch one component's release zip and unpack it over its own directory under the install dir.
+# Every component below is this and nothing else; they differ only in name.
+function install_xema_component() {
+    local dir="$1"
+    local zip="$2"
+    local tag
+    tag=$(xema_release_tag)
+
+    if [ "$distro" != "Ubuntu" ]; then
+        return 0
+    fi
+
+    mkdir -p "$XEMA_INSTALL_DIR/$dir"
+    rm -rf "/tmp/$zip"
+
+    wget -q --show-progress "https://github.com/xema-in/manager/releases/download/$tag/$zip" -O "/tmp/$zip"
+    unzip -qo "/tmp/$zip" -d "$XEMA_INSTALL_DIR/$dir"
+
+    # Configuration does not live with the code. A release ships a default appsettings.json;
+    # seed /etc/xema from it only when there is nothing there, so an upgrade never overwrites
+    # what an administrator has set.
+    mkdir -p "$XEMA_CONFIG_DIR"
+    if [ -f "$XEMA_INSTALL_DIR/$dir/appsettings.json" ]; then
+        cp --update=none "$XEMA_INSTALL_DIR/$dir/appsettings.json" "$XEMA_CONFIG_DIR/$dir.json"
+    fi
+
+    # State is the service's to write, and is the one thing that stays in /var/lib.
+    mkdir -p "$XEMA_STATE_DIR/$dir"
+}
+
 function install_xema_fastagi() {
     header
-
-    mkdir -p /var/lib/xema/fastagi
-    rm -rf /tmp/fastagi.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/FastAGI.zip -O /tmp/fastagi.zip
-        unzip -qo /tmp/fastagi.zip -d /var/lib/xema/fastagi
-    fi
-
+    install_xema_component "fastagi" "FastAGI.zip"
     footer
 }
 
 function install_xema_astermq() {
     header
-
-    mkdir -p /var/lib/xema/astermq
-    rm -rf /tmp/astermq.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/AsterMQ.zip -O /tmp/astermq.zip
-        unzip -qo /tmp/astermq.zip -d /var/lib/xema/astermq
-    fi
-
+    install_xema_component "astermq" "AsterMQ.zip"
     footer
 }
 
 function install_xema_simplecdr() {
     header
-
-    mkdir -p /var/lib/xema/simplecdr
-    rm -rf /tmp/simplecdr.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/SimpleCdr.zip -O /tmp/simplecdr.zip
-        unzip -qo /tmp/simplecdr.zip -d /var/lib/xema/simplecdr
-    fi
-
+    install_xema_component "simplecdr" "SimpleCdr.zip"
     footer
 }
 
 function install_xema_bff() {
     header
-
-    mkdir -p /var/lib/xema/bff
-    rm -rf /tmp/bff.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Bff.zip -O /tmp/bff.zip
-        unzip -qo /tmp/bff.zip -d /var/lib/xema/bff
-    fi
-
+    install_xema_component "bff" "Bff.zip"
     footer
 }
 
 function install_xema_queue() {
     header
-
-    mkdir -p /var/lib/xema/queue
-    rm -rf /tmp/queue.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Queue.zip -O /tmp/queue.zip
-        unzip -qo /tmp/queue.zip -d /var/lib/xema/queue
-    fi
-
+    install_xema_component "queue" "Queue.zip"
     footer
 }
 
 function install_xema_tracer() {
     header
-
-    mkdir -p /var/lib/xema/tracer
-    rm -rf /tmp/tracer.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Tracer.zip -O /tmp/tracer.zip
-        unzip -qo /tmp/tracer.zip -d /var/lib/xema/tracer
-    fi
-
+    install_xema_component "tracer" "Tracer.zip"
     footer
 }
 
 function install_xema_sipper() {
     header
-
-    mkdir -p /var/lib/xema/sipper
-    rm -rf /tmp/sipper.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Sipper.zip -O /tmp/sipper.zip
-        unzip -qo /tmp/sipper.zip -d /var/lib/xema/sipper
-    fi
-
+    install_xema_component "sipper" "Sipper.zip"
     footer
 }
 
 function install_xema_missingcdrs() {
     header
-
-    mkdir -p /var/lib/xema/import
-    rm -rf /tmp/missingcdrs.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/MissingCdrs.zip -O /tmp/missingcdrs.zip
-        unzip -qo /tmp/missingcdrs.zip -d /var/lib/xema/import
-    fi
-
+    install_xema_component "import" "MissingCdrs.zip"
     footer
 }
 
 function install_xema_ava() {
     header
-
-    mkdir -p /var/lib/xema/ava
-    rm -rf /tmp/ava.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Ava.zip -O /tmp/ava.zip
-        unzip -qo /tmp/ava.zip -d /var/lib/xema/ava
-    fi
-
+    install_xema_component "ava" "Ava.zip"
     footer
 }
 
 function install_xema_metrics() {
     header
-
-    mkdir -p /var/lib/xema/metrics
-    rm -rf /tmp/metrics.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/Metrics.zip -O /tmp/metrics.zip
-        unzip -qo /tmp/metrics.zip -d /var/lib/xema/metrics
-    fi
-
+    install_xema_component "metrics" "Metrics.zip"
     footer
 }
 
 function install_xema_metricsbackfill() {
     header
-
-    mkdir -p /var/lib/xema/backfill
-    rm -rf /tmp/metricsbackfill.zip
-
-    if [ "$channel" == "dev" ]; then
-        release_tag="dev"
-    else
-        release_tag="v2.0"
-    fi
-
-    if [ "$distro" == "Ubuntu" ]; then
-        wget -q --show-progress https://github.com/xema-in/manager/releases/download/$release_tag/MetricsBackfill.zip -O /tmp/metricsbackfill.zip
-        unzip -qo /tmp/metricsbackfill.zip -d /var/lib/xema/backfill
-    fi
-
+    install_xema_component "backfill" "MetricsBackfill.zip"
     footer
 }
 
@@ -735,6 +637,49 @@ function install_xema_cli() {
         chmod +x /usr/local/bin/xema
         /usr/local/bin/xema completion bash > /etc/bash_completion.d/xema
     fi
+
+    footer
+}
+
+# Move a server laid out the old way — everything in /var/lib/xema — onto the split layout.
+#
+# Deliberately conservative: it copies configuration out and leaves the old tree entirely alone.
+# A migration that both relocates everything and deletes the original has no way back when it is
+# wrong, and this one runs unattended on live call centres. The old directory simply stops being
+# used; a later release removes it once this has proven itself.
+#
+# Safe to run repeatedly: it never overwrites a file that already exists at the destination.
+function migrate_xema_layout() {
+    header
+
+    mkdir -p "$XEMA_CONFIG_DIR" "$XEMA_INSTALL_DIR" "$XEMA_STATE_DIR"
+
+    if [ ! -d "$XEMA_LEGACY_DIR" ]; then
+        footer "nothing to migrate"
+        return 0
+    fi
+
+    # Configuration is the only thing here that cannot simply be downloaded again, so it moves
+    # first and is never clobbered.
+    local dir
+    for dir in manager fastagi astermq simplecdr bff queue tracer sipper import ava metrics backfill; do
+        if [ -f "$XEMA_LEGACY_DIR/$dir/appsettings.json" ]; then
+            cp --update=none "$XEMA_LEGACY_DIR/$dir/appsettings.json" "$XEMA_CONFIG_DIR/$dir.json"
+            log "migrated settings: $dir"
+        fi
+    done
+
+    # State stays exactly where it is. /var/lib is already the right place for it, so
+    # simplecdr/state, network/, and the database dumps at the root of /var/lib/xema are
+    # untouched by any of this.
+
+    # Prune the unbounded pile of dated Manager copies the old backup step left behind.
+    local old
+    for old in "$XEMA_LEGACY_DIR"/manager.[0-9]*; do
+        [ -d "$old" ] || continue
+        rm -rf "$old"
+        log "removed stale backup: $old"
+    done
 
     footer
 }
@@ -762,11 +707,18 @@ function install_xema_binary() {
 function backup_existing_installation() {
     header
 
-    mkdir -p /var/lib/xema/manager
-    cp -r /var/lib/xema/manager /var/lib/xema/manager.$(date '+%Y%m%d.%H')
+    # One previous copy, beside the current one, so a bad upgrade can be stepped back.
+    #
+    # This used to copy the whole tree into /var/lib/xema/manager.<date> on every run and never
+    # remove any of them — 1.4 GB of dead Manager trees had accumulated on one box. A backup
+    # nobody prunes is a disk-full waiting to happen, and the state directory is the wrong place
+    # for program code besides.
+    if [ -d "$XEMA_INSTALL_DIR/manager" ]; then
+        rm -rf "$XEMA_INSTALL_DIR/manager.previous"
+        cp -a "$XEMA_INSTALL_DIR/manager" "$XEMA_INSTALL_DIR/manager.previous"
+    fi
+
     rm -rf /tmp/manager.zip
-    rm -f /tmp/appsettings.json
-    cp -f /var/lib/xema/manager/appsettings.json /tmp/appsettings.json
 
     footer
 }
@@ -778,16 +730,13 @@ function install_xema_prod_channel() {
     echo "Installing from ${green}$channel${reset} channel ..."
 
     if [ "$distro" == "Ubuntu" ]; then
+        mkdir -p "$XEMA_INSTALL_DIR/manager"
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/v2.0/Manager.zip -O /tmp/manager.zip
-        unzip -qo /tmp/manager.zip -d /var/lib/xema/manager
+        unzip -qo /tmp/manager.zip -d "$XEMA_INSTALL_DIR/manager"
     fi
 
-    if [ "$distro" == "CentOS" ]; then
-        echo "${red}$LINENO: Not implemented${reset}"
-    fi
-
-    if [ "$distro" == "Unknown" ]; then
-        echo "${red}$LINENO: $distro OS${reset}"
+    if [ "$distro" != "Ubuntu" ]; then
+        echo "${red}$LINENO: $distro not implemented${reset}"
     fi
 
     footer
@@ -800,16 +749,13 @@ function install_xema_dev_channel() {
     echo "Installing from ${green}$channel${reset} channel ..."
 
     if [ "$distro" == "Ubuntu" ]; then
+        mkdir -p "$XEMA_INSTALL_DIR/manager"
         wget -q --show-progress https://github.com/xema-in/manager/releases/download/dev/Manager.zip -O /tmp/manager.zip
-        unzip -qo /tmp/manager.zip -d /var/lib/xema/manager
+        unzip -qo /tmp/manager.zip -d "$XEMA_INSTALL_DIR/manager"
     fi
 
-    if [ "$distro" == "CentOS" ]; then
-        echo "${red}$LINENO: Not implemented${reset}"
-    fi
-
-    if [ "$distro" == "Unknown" ]; then
-        echo "${red}$LINENO: $distro OS${reset}"
+    if [ "$distro" != "Ubuntu" ]; then
+        echo "${red}$LINENO: $distro not implemented${reset}"
     fi
 
     footer
@@ -818,9 +764,15 @@ function install_xema_dev_channel() {
 function add_default_settings() {
     header
 
-    cp -f /tmp/appsettings.json /var/lib/xema/manager/appsettings.json
-    # cp -n /var/lib/xema/manager/appsettings.default.json /var/lib/xema/manager/appsettings.json
-    cp --update=none /var/lib/xema/manager/appsettings.default.json /var/lib/xema/manager/appsettings.json
+    # Seed configuration only where there is none. An upgrade must never overwrite what an
+    # administrator has set — which is exactly what shipping config inside the code directory
+    # used to do.
+    mkdir -p "$XEMA_CONFIG_DIR"
+    if [ -f "$XEMA_INSTALL_DIR/manager/appsettings.default.json" ]; then
+        cp --update=none "$XEMA_INSTALL_DIR/manager/appsettings.default.json" "$XEMA_CONFIG_DIR/manager.json"
+    fi
+
+    mkdir -p "$XEMA_STATE_DIR/manager"
 
     footer
 }
@@ -1040,13 +992,40 @@ function configure_prometheus() {
     footer
 }
 
+# The units Xema installs. Order is install order, not start order.
+XEMA_UNITS=(
+    xema-manager
+    xema-fastagi
+    xema-astermq
+    xema-simplecdr
+    xema-bff
+    xema-ava
+    xema-sipper
+    xema-metrics
+    xema-queue
+)
+
+function install_xema_unit() {
+    local unit="$1"
+
+    wget -q "https://raw.githubusercontent.com/xema-in/install/master/deps/$unit.service" -O "/tmp/$unit.service"
+    if [ ! -s "/tmp/$unit.service" ]; then
+        echo "${red}$LINENO: could not fetch $unit.service${reset}"
+        return 1
+    fi
+
+    cp "/tmp/$unit.service" "/lib/systemd/system/$unit.service"
+    systemctl daemon-reload
+    systemctl enable "$unit.service"
+    log "unit installed: $unit"
+}
+
 function configure_xema_service() {
     header
 
     if [[ $hostsys == "WSL" && $kernel == "Linux" ]]; then
         # wsl
-        ls /etc/init.d/xema-manager
-        if [ "$?" -ne "0" ]; then
+        if [ ! -f /etc/init.d/xema-manager ]; then
             wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-manager -O /tmp/xema-manager
             cp /tmp/xema-manager /etc/init.d/xema-manager
             chmod +x /etc/init.d/xema-manager
@@ -1055,103 +1034,14 @@ function configure_xema_service() {
 
     elif [[ $hostsys == "Linux" && $kernel == "Linux" ]]; then
         # Ubuntu, CentOS
-
-        # systemctl list-dependencies xema-manager.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-manager.service -O /tmp/xema-manager.service
-        cp /tmp/xema-manager.service /lib/systemd/system/xema-manager.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-manager.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-manager.service /etc/systemd/system/multi-user.target.wants/xema-manager.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-manager.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-fastagi.service -O /tmp/xema-fastagi.service
-        cp /tmp/xema-fastagi.service /lib/systemd/system/xema-fastagi.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-fastagi.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-fastagi.service /etc/systemd/system/multi-user.target.wants/xema-fastagi.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-fastagi.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-astermq.service -O /tmp/xema-astermq.service
-        cp /tmp/xema-astermq.service /lib/systemd/system/xema-astermq.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-astermq.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-astermq.service /etc/systemd/system/multi-user.target.wants/xema-astermq.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-astermq.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-simplecdr.service -O /tmp/xema-simplecdr.service
-        cp /tmp/xema-simplecdr.service /lib/systemd/system/xema-simplecdr.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-simplecdr.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-simplecdr.service /etc/systemd/system/multi-user.target.wants/xema-simplecdr.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-simplecdr.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-bff.service -O /tmp/xema-bff.service
-        cp /tmp/xema-bff.service /lib/systemd/system/xema-bff.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-bff.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-bff.service /etc/systemd/system/multi-user.target.wants/xema-bff.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-bff.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-ava.service -O /tmp/xema-ava.service
-        cp /tmp/xema-ava.service /lib/systemd/system/xema-ava.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-ava.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-ava.service /etc/systemd/system/multi-user.target.wants/xema-ava.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-ava.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-sipper.service -O /tmp/xema-sipper.service
-        cp /tmp/xema-sipper.service /lib/systemd/system/xema-sipper.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-sipper.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-sipper.service /etc/systemd/system/multi-user.target.wants/xema-sipper.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-sipper.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-metrics.service -O /tmp/xema-metrics.service
-        cp /tmp/xema-metrics.service /lib/systemd/system/xema-metrics.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-metrics.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-metrics.service /etc/systemd/system/multi-user.target.wants/xema-metrics.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-metrics.service
-
-        wget -q https://raw.githubusercontent.com/xema-in/install/master/deps/xema-queue.service -O /tmp/xema-queue.service
-        cp /tmp/xema-queue.service /lib/systemd/system/xema-queue.service
-        ls /etc/systemd/system/multi-user.target.wants/xema-queue.service
-        if [ "$?" -ne "0" ]; then
-            ln -s /lib/systemd/system/xema-queue.service /etc/systemd/system/multi-user.target.wants/xema-queue.service
-        fi
-        systemctl daemon-reload
-        systemctl enable xema-queue.service
-
+        #
+        # This was the same eight lines repeated once per service, which is how xema-tracer came
+        # to have no unit at all: adding one meant remembering to copy the block again.
+        local unit
+        for unit in "${XEMA_UNITS[@]}"; do
+            install_xema_unit "$unit"
+        done
     fi
-
-    # if [ "$distro" == "Ubuntu" ]; then
-    #     echo "${red}$LINENO: Not implemented${reset}"
-    # fi
-
-    # if [ "$distro" == "CentOS" ]; then
-    #     echo "${red}$LINENO: Not implemented${reset}"
-    # fi
-
-    # if [ "$distro" == "Unknown" ]; then
-    #     echo "${red}$LINENO: $distro OS${reset}"
-    # fi
 
     footer
 }

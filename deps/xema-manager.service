@@ -4,16 +4,20 @@ Description=Xema Manager service
 # After=xema-fastagi.service
 
 [Service]
-# Readiness is signalled by the app itself (AddSystemd).
 Type=notify
 TimeoutStartSec=300
-ExecStart=/usr/bin/dotnet /var/lib/xema/manager/Manager.dll
-WorkingDirectory=/var/lib/xema/manager
+ExecStart=/usr/bin/dotnet /opt/techsudoku/xema/manager/Manager.dll
+WorkingDirectory=/opt/techsudoku/xema/manager
 User=
 Group=
 Restart=on-failure
 SyslogIdentifier=xema-manager
 PrivateTmp=true
+
+ConfigurationDirectory=xema
+StateDirectory=xema/manager
+Environment=XEMA_CONFIG_DIR=/etc/xema
+Environment=XEMA_SERVICE=manager
 
 [Install]
 WantedBy=multi-user.target

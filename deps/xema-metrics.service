@@ -4,16 +4,20 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-# Readiness is signalled by the app itself (AddSystemd).
 Type=notify
 TimeoutStartSec=120
-ExecStart=/usr/bin/dotnet /var/lib/xema/metrics/Metrics.dll
-WorkingDirectory=/var/lib/xema/metrics
+ExecStart=/usr/bin/dotnet /opt/techsudoku/xema/metrics/Metrics.dll
+WorkingDirectory=/opt/techsudoku/xema/metrics
 User=
 Group=
 Restart=on-failure
 SyslogIdentifier=xema-metrics
 PrivateTmp=true
+
+ConfigurationDirectory=xema
+StateDirectory=xema/metrics
+Environment=XEMA_CONFIG_DIR=/etc/xema
+Environment=XEMA_SERVICE=metrics
 
 [Install]
 WantedBy=multi-user.target
