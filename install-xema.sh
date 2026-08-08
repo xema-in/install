@@ -663,8 +663,8 @@ function migrate_xema_layout() {
     # first and is never clobbered.
     local dir
     for dir in manager fastagi astermq simplecdr bff queue tracer sipper import ava metrics backfill; do
-        if [ -f "$XEMA_LEGACY_DIR/$dir/appsettings.json" ]; then
-            cp --update=none "$XEMA_LEGACY_DIR/$dir/appsettings.json" "$XEMA_CONFIG_DIR/$dir.json"
+        if [ -f "$XEMA_LEGACY_DIR/$dir/appsettings.json" ] && [ ! -f "$XEMA_CONFIG_DIR/$dir.json" ]; then
+            cp "$XEMA_LEGACY_DIR/$dir/appsettings.json" "$XEMA_CONFIG_DIR/$dir.json"
             log "migrated settings: $dir"
         fi
     done
